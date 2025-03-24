@@ -8,3 +8,4 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./onepassword-connect/ks.yaml
+  - ./external-secrets/ks.yaml
