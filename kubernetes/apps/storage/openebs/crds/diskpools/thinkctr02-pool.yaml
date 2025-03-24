@@ -1,0 +1,9 @@
+---
+apiVersion: "openebs.io/v1beta2"
+kind: DiskPool
+metadata:
+  name: thinkctr02-pool
+  namespace: storage-system
+spec:
+  node: thinkctr02
+  disks: ["/dev/nvme0n1"]
