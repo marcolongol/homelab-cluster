@@ -1,0 +1,94 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openebs
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: openebs
+      version: 4.2.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: openebs
+        namespace: flux-system
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+  values:
+    openebs-crds:
+      csi:
+        volumeSnapshots:
+          enabled: true
+          keep: true
+
+    # Refer to https://github.com/openebs/dynamic-localpv-provisioner/blob/v4.1.4/deploy/helm/charts/values.yaml for complete set of values.
+    localpv-provisioner:
+      rbac:
+        create: true
+
+    # Refer to https://github.com/openebs/zfs-localpv/blob/v2.6.2/deploy/helm/charts/values.yaml for complete set of values.
+    zfs-localpv:
+      crds:
+        zfsLocalPv:
+          enabled: false
+        csi:
+          volumeSnapshots:
+            enabled: false
+
+    # Refer to https://github.com/openebs/lvm-localpv/blob/lvm-localpv-1.6.2/deploy/helm/charts/values.yaml for complete set of values.
+    lvm-localpv:
+      crds:
+        lvmLocalPv:
+          enabled: false
+        csi:
+          volumeSnapshots:
+            enabled: false
+
+    # Refer to https://github.com/openebs/mayastor-extensions/blob/v2.7.3/chart/values.yaml for complete set of values.
+    mayastor:
+      csi:
+        node:
+          initContainers:
+            enabled: true
+      localpv-provisioner:
+        enabled: false
+      jaeger:
+        enabled: false
+      loki-stack:
+        enabled: false
+      obs:
+        callhome:
+          enabled: false
+      etcd:
+        localpvScConfig:
+          enabled: false
+        persistence:
+          storageClass: "openebs-hostpath"
+      storageClass:
+        enabled: false
+      io_engine:
+        cpuCount: 2
+
+    engines:
+      local:
+        lvm:
+          enabled: false
+        zfs:
+          enabled: false
+      replicated:
+        mayastor:
+          enabled: true # TODO: Enable when using mayastor engine.
