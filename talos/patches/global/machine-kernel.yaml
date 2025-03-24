@@ -1,0 +1,18 @@
+machine:
+  install:
+    extraKernelArgs:
+      - net.ifnames=0
+      - ipv6.disable=1
+      - apparmor=0
+      - init_on_alloc=1
+      - init_on_free=1
+      - intel_iommu=on
+      - iommu=pt
+      - mitigations=off
+      - security=none
+  kernel:
+    modules:
+      - name: nvme-tcp
+      - name: ext4
+      - name: nfs
+      - name: xfs

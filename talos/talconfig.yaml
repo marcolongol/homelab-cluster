@@ -27,6 +27,8 @@ nodes:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/96f8c146a67c80daad900d3fc1a6976fe11062321eee9ab6ae2a6aea88b2d26e
     controlPlane: true
+    nodeLabels:
+      openebs.io/engine: "mayastor"
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "6c:4b:90:70:dd:9b"
@@ -39,6 +41,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.10.200"
+
   - hostname: "thinkctr02"
     ipAddress: "10.0.10.20"
     installDisk: "/dev/sda"
@@ -46,6 +49,8 @@ nodes:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/96f8c146a67c80daad900d3fc1a6976fe11062321eee9ab6ae2a6aea88b2d26e
     controlPlane: true
+    nodeLabels:
+      openebs.io/engine: "mayastor"
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "6c:4b:90:c5:da:ed"
@@ -58,6 +63,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.10.200"
+
   - hostname: "thinkctr03"
     ipAddress: "10.0.10.30"
     installDisk: "/dev/sda"
@@ -65,6 +71,8 @@ nodes:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/96f8c146a67c80daad900d3fc1a6976fe11062321eee9ab6ae2a6aea88b2d26e
     controlPlane: true
+    nodeLabels:
+      openebs.io/engine: "mayastor"
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "6c:4b:90:cd:80:9a"
@@ -81,6 +89,7 @@ nodes:
 # Global patches
 patches:
   - "@./patches/global/machine-files.yaml"
+  - "@./patches/global/machine-kernel.yaml"
   - "@./patches/global/machine-kubelet.yaml"
   - "@./patches/global/machine-network.yaml"
   - "@./patches/global/machine-sysctls.yaml"
@@ -88,6 +97,19 @@ patches:
 
 # Controller patches
 controlPlane:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - "siderolabs/zfs"
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
+
+# Worker patches
+worker:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - "siderolabs/zfs"
