@@ -1,18 +1,15 @@
 machine:
   install:
     extraKernelArgs:
-      - net.ifnames=0
-      - ipv6.disable=1
+      - amd_pstate=1
       - apparmor=0
+      - cpufreq.default_governor=performance
       - init_on_alloc=1
       - init_on_free=1
-      - intel_iommu=on
-      - iommu=pt
       - mitigations=off
+      - nvme_core.multipath=1
       - security=none
   kernel:
     modules:
-      - name: nvme-tcp
-      - name: ext4
-      - name: nfs
       - name: xfs
+      - name: zfs
