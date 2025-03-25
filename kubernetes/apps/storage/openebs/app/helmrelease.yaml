@@ -85,7 +85,7 @@ spec:
           tcp:
             maxQueueDepth: 128
             maxQpairsPerCtrlr: 128
-        cpuCount: 2
+        cpuCount: 1
 
     engines:
       local:
