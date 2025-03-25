@@ -81,6 +81,10 @@ spec:
       storageClass:
         enabled: false
       io_engine:
+        nvme:
+          tcp:
+            maxQueueDepth: 128
+            maxQpairsPerCtrlr: 128
         cpuCount: 2
 
     engines:
