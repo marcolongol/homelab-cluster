@@ -1,0 +1,51 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: kube-prometheus-stack
+    namespace: flux-system
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+  values:
+    crds:
+      enabled: true
+      upgradeJob:
+        enabled: true
+        forceConflicts: true
+
+    cleanPrometheusOperatorObjectNames: true
+
+    kubeEtcd:
+      service:
+        selector:
+          component: kube-apiserver # etcd runs on control plane nodes
+
+    kubeProxy:
+      enabled: false
+
+    grafana:
+      enabled: true
+      forceDeployDashboards: true
+      defaultDashboardsTimezone: America/Los_Angeles
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        hosts:
+          - grafana.${SECRET_DOMAIN}
