@@ -1,0 +1,19 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: nfs-csi
+allowVolumeExpansion: true
+parameters:
+  server: ${CONFIG_NAS_IP_ADDRESS}
+  share: ${CONFIG_NAS_k8s_SHARE}
+  subDir: ${CONFIG_NAS_k8s_SUBDIR}
+  mountPermissions: "775"
+mountOptions:
+  - nfsvers=4
+  - rsize=1048576
+  - noatime
+  - hard
+  - tcp
+  - async
+  - timeo=600
+provisioner: nfs.csi.k8s.io
