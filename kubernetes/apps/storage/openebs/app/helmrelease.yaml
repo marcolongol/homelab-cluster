@@ -95,4 +95,4 @@ spec:
           enabled: false
       replicated:
         mayastor:
-          enabled: true # TODO: Enable when using mayastor engine.
+          enabled: true
