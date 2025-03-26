@@ -36,6 +36,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: openebs
+      namespace: storage
   interval: 1h
   path: ./kubernetes/apps/storage/openebs/crds
   postBuild:
