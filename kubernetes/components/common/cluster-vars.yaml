@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: cluster-vars
 data:
+  CONFIG_OPNSENSE_IP_ADDRESS: 10.0.0.1
   CONFIG_NAS_IP_ADDRESS: 10.0.0.4
