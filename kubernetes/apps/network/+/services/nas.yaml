@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.26.1-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: nas
+spec:
+  type: ExternalName
+  externalName: ${CONFIG_NAS_IP_ADDRESS}
+  ports:
+    - name: nas-5000
+      protocol: TCP
+      port: 5000
+    - name: nas-5001
+      protocol: TCP
+      port: 5001
