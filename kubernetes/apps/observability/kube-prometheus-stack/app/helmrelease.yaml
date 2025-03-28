@@ -25,12 +25,18 @@ spec:
     crds: CreateReplace
   values:
     crds:
-      enabled: true
       upgradeJob:
         enabled: true
         forceConflicts: true
 
     cleanPrometheusOperatorObjectNames: true
+
+    alertmanager:
+      ingres:
+        enabled: true
+        ingressClassName: internal
+        hosts:
+          - alertmanager.${SECRET_DOMAIN}
 
     kubeEtcd:
       service:
@@ -43,9 +49,71 @@ spec:
     grafana:
       enabled: true
       forceDeployDashboards: true
-      defaultDashboardsTimezone: America/Los_Angeles
       ingress:
         enabled: true
         ingressClassName: internal
         hosts:
           - grafana.${SECRET_DOMAIN}
+      additionalPrometheusRulesMap:
+        oom-rules:
+          groups:
+            - name: "oom-rules"
+              rules:
+                - alert: OOMKilled
+                  expr: (kube_pod_container_status_terminated_reason{reason="OOMKilled"} > 0)
+                  for: 5m
+                  labels:
+                    severity: warning
+                  annotations:
+                    summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled"
+                    description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled on {{ $value}}"
+
+    prometheus:
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        hosts:
+          - prometheus.${SECRET_DOMAIN}
+      prometheusSpec:
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        enableAdminAPI: true
+        walCompression: true
+        retention: 30d
+        retentionSize: 50GB
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            memory: 2000Mi
+
+    prometheus-node-exporter:
+      fullnameOverride: node-exporter
+      prometheus:
+        monitor:
+          enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: ["__meta_kubernetes_pod_node_name"]
+            targetLabel: kubernetes_node
+
+    kube-state-metrics:
+      fullnameOverride: kube-state-metrics
+      metricLabelsAllowList:
+        - pods=[*]
+        - deployments=[*]
+        - persistentvolumeclaims=[*]
+      prometheus:
+        monitor:
+          enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: ["__meta_kubernetes_pod_node_name"]
+            targetLabel: kubernetes_node
