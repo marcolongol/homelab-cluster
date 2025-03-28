@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nas
+  name: synology
 spec:
   type: ExternalName
   externalName: ${CONFIG_NAS_IP_ADDRESS}
   ports:
-    - name: nas-5000
+    - name: synology-5000
       protocol: TCP
       port: 5000
-    - name: nas-5001
+    - name: synology-5001
       protocol: TCP
       port: 5001
