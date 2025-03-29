@@ -8,3 +8,4 @@ resources:
   - ./external-dns.yaml
   - ./ingress-nginx.yaml
   - ./openebs.yaml
+  - ./openebs-monitoring.yaml

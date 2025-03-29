@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openebs-monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: monitoring
+      version: 4.0.1
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: openebs-monitoring
+        namespace: flux-system
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+  values:
+    kube-prometheus-stack:
+      install: false
+
+    node-problem-detector:
+      enabled: true
+
+    localpv-provisioner:
+      enabled: false
+
+    openebsMonitoringAddon:
+      lvmLocalPV:
+        enabled: false
+
+      zfsLocalPV:
+        enabled: false
+
+      volume:
+        enabled: true
