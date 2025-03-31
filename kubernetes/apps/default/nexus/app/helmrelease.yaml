@@ -1,0 +1,136 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nexus
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      nexus:
+        strategy: RollingUpdate
+        initContainers:
+          init-nexus-data:
+            image:
+              repository: busybox
+              tag: latest
+            command:
+              - /bin/sh
+              - -c
+              - |
+                mkdir -p /nexus-data/etc
+                mkdir -p /nexus-data/log
+                mkdir -p /nexus-data/tmp
+                chown -R 200:200 /nexus-data
+            securityContext:
+              runAsUser: 0
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64M
+              limits:
+                cpu: 100m
+                memory: 128M
+        containers:
+          app:
+            image:
+              repository: sonatype/nexus3
+              tag: 3.78.2-alpine
+            env:
+              - name: NEXUS_DATA
+                value: /nexus-data
+              - name: INSTALL4J_ADD_OPTS
+                value: |
+                  -Xms2703M -Xmx2703M
+                  -XX:MaxDirectMemorySize=2703M
+                  -XX:UnlockExperimentalVMOptions
+                  -XX:+UseCGroupMemoryLimitForHeap
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128M
+              limits:
+                cpu: 1000m
+                memory: 2Gi
+            securityContext:
+              runAsUser: 200
+              runAsGroup: 200
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+    service:
+      app:
+        controller: nexus
+        ports:
+          http:
+            port: &port 8081
+      registry:
+        controller: nexus
+        ports:
+          http:
+            port: 5000
+    serviceMonitor:
+      app:
+        serviceName: nexus
+        endpoints:
+          - port: http
+            scheme: http
+            path: /service/metrics/prometheus
+            interval: 1m
+            scrapeTimeout: 10s
+    ingress:
+      app:
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+          nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+          nginx.ingress.kubernetes.io/proxy-buffering: "on"
+          nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+          nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+          nginx.ingress.kubernetes.io/proxy-cache: "off"
+        hosts:
+          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+      registry:
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+          nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+          nginx.ingress.kubernetes.io/proxy-buffering: "on"
+          nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+          nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+          nginx.ingress.kubernetes.io/proxy-cache: "off"
+        hosts:
+          - host: registry.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: registry
+                  port: http
+    persistence:
+      data:
+        storageClass: openebs-single
+        accessMode: ReadWriteOnce
+        size: 50Gi
+        globalMounts:
+          - path: /nexus-data
