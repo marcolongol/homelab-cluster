@@ -10,3 +10,4 @@ resources:
   - ./echo/ks.yaml
   - ./actual/ks.yaml
   - ./nexus/ks.yaml
+  - ./minecraft/ks.yaml

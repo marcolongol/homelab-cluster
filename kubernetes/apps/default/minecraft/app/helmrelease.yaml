@@ -1,0 +1,96 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: minecraft
+      version: 4.24.0
+      sourceRef:
+        kind: HelmRepository
+        name: minecraft-server-charts
+        namespace: flux-system
+      interval: 15m
+  install:
+    timeout: 15m
+    remediation:
+      retries: 5
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 5
+  values:
+    global:
+      hostname: "minecraft.${SECRET_DOMAIN}"
+    image:
+      repository: ghcr.io/itzg/minecraft-server
+      tag: 2025.2.1-java21
+    resources:
+      requests:
+        cpu: 4000m
+        memory: 16384Mi
+    persistence:
+      storageClass: openebs-single
+      dataDir:
+        enabled: true
+        Size: 10Gi
+    envFrom:
+      - secretRef:
+          name: minecraft-secret
+      - configMapRef:
+          name: minecraft-config
+    serviceAnnotations:
+      lbipam.cilium.io/ips: "10.0.11.203"
+      coredns.io/hostname: "minecraft.${SECRET_DOMAIN}"
+    rconServiceAnnotations:
+      lbipam.cilium.io/ips: "10.0.11.204"
+      coredns.io/hostname: "rcon.${SECRET_DOMAIN}"
+    minecraftServer:
+      eula: true
+      version: 1.21.1
+      type: AUTO_CURSEFORGE
+      forceReDownload: true
+      jvmXXOpts: |
+        -XX:+UseG1GC
+        -XX:+ParallelRefProcEnabled
+        -XX:MaxGCPauseMillis=200
+        -XX:+UnlockExperimentalVMOptions
+        -XX:+DisableExplicitGC
+        -XX:+AlwaysPreTouch
+        -XX:G1NewSizePercent=30
+        -XX:G1MaxNewSizePercent=40
+        -XX:G1HeapRegionSize=8M
+        -XX:G1ReservePercent=20
+        -XX:G1HeapWastePercent=5
+        -XX:G1MixedGCCountTarget=4
+        -XX:InitiatingHeapOccupancyPercent=15
+        -XX:G1MixedGCLiveThresholdPercent=90
+        -XX:G1RSetUpdatingPauseTimePercent=5
+        -XX:SurvivorRatio=32
+        -XX:+PerfDisableSharedMem
+        -XX:MaxTenuringThreshold=1
+      rcon:
+        enabled: true
+        serviceType: LoadBalancer
+        existingSecret: minecraft-secret
+        secretKey: RCON_PASSWORD
+      autoCurseForge:
+        apiKey:
+          existingSecret: minecraft-secret
+          secretKey: CF_API_KEY
+        slug: ftb-oceanblock-2
+      memory: 16G
+      difficulty: normal
+      spawnProtection: 0
+      maxTickTime: -1
+      gameMode: survival
+      pvp: true
+      onlineMode: true
+      ops: "chaosface_"
+      worldSaveName: KubeMine
+      viewDistance: 12
+      serviceType: LoadBalancer

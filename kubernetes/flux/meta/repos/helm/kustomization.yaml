@@ -8,5 +8,6 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./external-dns.yaml
   - ./ingress-nginx.yaml
+  - ./minecraft.yaml
   - ./openebs-monitoring.yaml
   - ./openebs.yaml
