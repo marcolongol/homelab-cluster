@@ -10,9 +10,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: openebs-crds
+    - name: openebs
       namespace: storage
-    - name: csi-driver-nfs-crds
+    - name: csi-driver-nfs
       namespace: storage
   interval: 1h
   path: ./kubernetes/apps/observability/kube-prometheus-stack/app
