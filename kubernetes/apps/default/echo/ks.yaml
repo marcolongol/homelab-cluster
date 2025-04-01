@@ -12,6 +12,8 @@ spec:
   dependsOn:
     - name: external-ingress-nginx
       namespace: network
+    - name: cloudflared
+      namespace: network
   interval: 1h
   path: ./kubernetes/apps/default/echo/app
   postBuild:

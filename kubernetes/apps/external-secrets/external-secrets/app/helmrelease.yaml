@@ -16,9 +16,6 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  dependsOn:
-    - name: onepassword-connect
-      namespace: external-secrets
   values:
     serviceMonitor:
       enabled: true
