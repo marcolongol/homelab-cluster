@@ -3,14 +3,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app minecraft
-  namespace: &namespace default
+  name: &app onepassword-connect
+  namespace: &namespace external-secrets
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: external-ingress-nginx
+      namespace: network
+    - name: cloudflared
+      namespace: network
   interval: 1h
-  path: ./kubernetes/apps/default/minecraft/app
+  path: ./kubernetes/infra/external-secrets/onepassword-connect/app
   postBuild:
     substituteFrom:
       - name: cluster-secrets

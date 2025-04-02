@@ -9,9 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: internal-ingress-nginx
-      namespace: network
   interval: 1h
   path: ./kubernetes/apps/default/actual/app
   postBuild:

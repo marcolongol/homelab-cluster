@@ -9,11 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: internal-ingress-nginx
-      namespace: network
-    - name: openebs
-      namespace: storage
   interval: 1h
   path: ./kubernetes/apps/default/nexus/app
   postBuild:
