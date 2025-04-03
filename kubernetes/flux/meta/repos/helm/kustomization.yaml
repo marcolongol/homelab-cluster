@@ -5,6 +5,8 @@ kind: Kustomization
 resources:
   - ./1password.yaml
   - ./backube.yaml
+  - ./cloudnative-pg.yaml
+  - ./cnpg-grafana.yaml
   - ./csi-driver-nfs.yaml
   - ./external-dns.yaml
   - ./ingress-nginx.yaml

@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/marcolongol/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cloudnative-pg
+spec:
+  instances: 3
+
+  imageName: ghcr.io/cloudnative-pg/postgis:17-3.4
+  bootstrap:
+    initdb:
+      postInitTemplateSQL:
+        - CREATE EXTENSION postgis;
+        - CREATE EXTENSION postgis_topology;
+        - CREATE EXTENSION fuzzystrmatch;
+        - CREATE EXTENSION postgis_tiger_geocoder;
+
+  storage:
+    size: 30Gi
+    storageClass: openebs-hostpath
+
+  enableSuperuserAccess: true
+
+  superuserSecret:
+    name: cloudnative-pg-secret
+
+  monitoring:
+    enablePodMonitor: true
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+
+  postgresql:
+    parameters:
+      max_connections: "300"
+      shared_buffers: 512MB
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
+
+  managed:
+    services:
+      disabledDefaultServices: ["ro", "r"]
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: cloudnative-pg-rw-lb
+              labels:
+                cnpg.io/cluster: cloudnative-pg
+              annotations:
+                lbipam.cilium.io/ips: "10.0.11.205"
+                coredns.io/hostname: "postgres.${SECRET_DOMAIN}"
+            spec:
+              type: LoadBalancer
+
+  #  recovery:
+  #    source: &previousCluster postgres16-003
+  # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  #externalClusters:
+  #  - name: *previousCluster
+  #    barmanObjectStore:
+  #      <<: *barmanObjectStore
+  #      serverName: *previousCluster
