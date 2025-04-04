@@ -6,6 +6,9 @@ metadata:
   name: &app adguard
   labels:
     app.kubernetes.io/name: *app
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-verify: "off"
 spec:
   ingressClassName: internal
   rules:
