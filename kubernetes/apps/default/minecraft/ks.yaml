@@ -9,12 +9,17 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/default/minecraft/app
   postBuild:
     substituteFrom:
       - name: cluster-secrets
         kind: Secret
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 10Gi
   prune: true
   retryInterval: 2m
   sourceRef:

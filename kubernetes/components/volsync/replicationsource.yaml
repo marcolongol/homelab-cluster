@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: "${APP}"
+spec:
+  sourcePVC: "${APP}"
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 14
+    storageClassName: openebs-single
+    cacheStorageClassName: openebs-single
+    repository: "${APP}-volsync-secret"
+    moverSecurityContext:
+      runAsUser: ${VOLSYNC_PUID:=1000}
+      runAsGroup: ${VOLSYNC_PGID:=1000}
+      fsGroup: ${VOLSYNC_PGID:=1000}
+    retain:
+      hourly: 24
+      daily: 7

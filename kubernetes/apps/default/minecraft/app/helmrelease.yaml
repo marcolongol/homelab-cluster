@@ -34,10 +34,9 @@ spec:
         cpu: 4000m
         memory: 16384Mi
     persistence:
-      storageClass: openebs-single
       dataDir:
         enabled: true
-        Size: 10Gi
+        existingClaim: *app
     envFrom:
       - secretRef:
           name: minecraft-secret
