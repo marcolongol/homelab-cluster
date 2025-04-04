@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: adguard
+subsets:
+  - addresses:
+      - ip: ${CONFIG_OPNSENSE_IP_ADDRESS}
+    ports:
+      - name: http
+        port: 3000
+        protocol: TCP

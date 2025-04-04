@@ -5,8 +5,7 @@ kind: Service
 metadata:
   name: synology
 spec:
-  type: ExternalName
-  externalName: ${CONFIG_NAS_IP_ADDRESS}
+  type: ClusterIP
   ports:
     - name: synology-5000
       protocol: TCP

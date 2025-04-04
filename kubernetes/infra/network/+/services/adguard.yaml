@@ -5,8 +5,7 @@ kind: Service
 metadata:
   name: adguard
 spec:
-  type: ExternalName
-  externalName: ${CONFIG_OPNSENSE_IP_ADDRESS}
+  type: ClusterIP
   ports:
     - name: http
       protocol: TCP
