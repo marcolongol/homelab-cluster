@@ -7,4 +7,5 @@ parameters:
   "protocol": "nvmf"
   "repl": "1"
   "fsType": "xfs"
+  "thin": "true"
 provisioner: io.openebs.csi-mayastor

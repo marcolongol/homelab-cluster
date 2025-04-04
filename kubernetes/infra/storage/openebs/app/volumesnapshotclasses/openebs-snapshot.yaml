@@ -5,4 +5,9 @@ metadata:
   annotations:
     snapshot.storage.kubernetes.io/is-default-class: "true"
 driver: io.openebs.csi-mayastor
+parameters:
+  "protocol": "nvmf"
+  "repl": "1"
+  "fsType": "xfs"
+  "thin": "true"
 deletionPolicy: Delete
