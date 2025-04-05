@@ -129,8 +129,8 @@ spec:
                   port: http
     persistence:
       data:
-        storageClass: openebs-single
-        accessMode: ReadWriteOnce
-        size: 50Gi
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: nexus
         globalMounts:
           - path: /nexus-data
