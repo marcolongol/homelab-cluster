@@ -6,4 +6,5 @@ data:
   CONFIG_OPNSENSE_IP_ADDRESS: 10.0.0.1
   CONFIG_NAS_IP_ADDRESS: 10.0.0.4
   CONFIG_NAS_k8s_SHARE: "/volume1/Kubernetes Volumes"
+  CONFIG_NAS_k8s_BACKUP_SHARE: "/volume1/Kubernetes Backups"
   CONFIG_NAS_k8s_SUBDIR: "${pvc.metadata.namespace}/${pvc.metadata.name}"
