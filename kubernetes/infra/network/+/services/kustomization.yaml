@@ -6,3 +6,4 @@ resources:
   - ./adguard.yaml
   - ./synology.yaml
   - ./firewall.yaml
+  - ./ldap.yaml

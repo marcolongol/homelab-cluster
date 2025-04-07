@@ -1,0 +1,79 @@
+theme: dark
+
+log:
+  level: debug
+
+server:
+  address: tcp://0.0.0.0:9091
+  disable_healthcheck: true
+
+telemetry:
+  metrics:
+    enabled: true
+    address: tcp://0.0.0.0:8080
+
+totp:
+  disable: false
+
+duo_api:
+  disable: false
+  enable_self_enrollment: true
+
+webauthn:
+  disable: true
+
+authentication_backend:
+  password_reset:
+    disable: false
+  refresh_interval: 1m
+  ldap:
+    implementation: custom
+    address: ldap://ldap.marcolongo.dev:389
+    timeout: 5s
+    start_tls: false
+    additional_users_dn: cn=users
+    users_filter: "(&(|({username_attribute}={input})(mail={input}))(objectClass=inetOrgPerson)(shadowExpire=-1)(mail=*))"
+    additional_groups_dn: cn=groups
+    groups_filter: "(member={dn})"
+    group_search_mode: filter
+    attributes:
+      username: uid
+      display_name: displayName
+      mail: mail
+      group_name: cn
+      member_of: memberOf
+
+session:
+  name: authelia_session
+  same_site: lax
+  expiration: 1h
+  inactivity: 15m
+  remember_me: 1M
+  cookies:
+    - domain: ${SECRET_DOMAIN}
+      authelia_url: https://auth.${SECRET_DOMAIN}
+      default_redirection_url: https://${SECRET_DOMAIN}
+
+notifier:
+  disable_startup_check: true
+  smtp:
+    address: submission://mail.${SECRET_DOMAIN}:587
+    username: admin@${SECRET_DOMAIN}
+    sender: Authelia <admin@${SECRET_DOMAIN}>
+
+access_control:
+  default_policy: deny
+  networks:
+    - name: internal
+      networks:
+        - 10.0.0.0/8
+  rules:
+    - domain:
+        - "auth.${SECRET_DOMAIN}"
+        - "echo-server.${SECRET_DOMAIN}"
+      policy: bypass
+
+    - domain: "*.${SECRET_DOMAIN}"
+      policy: bypass
+      methods:
+        - OPTIONS

@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.26.1-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap
+  annotations:
+    lbipam.cilium.io/ips: "10.0.11.206"
+    coredns.io/hostname: "ldap.${SECRET_DOMAIN}"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: ldap-389
+      protocol: TCP
+      port: 389
+    - name: ldap-636
+      protocol: TCP
+      port: 636

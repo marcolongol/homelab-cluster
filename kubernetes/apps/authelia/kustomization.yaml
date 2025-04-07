@@ -2,8 +2,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: authelia
+components:
+  - ../../components/common
+  - ../../components/repos/app-template
 resources:
-  - ./firewall.yaml
-  - ./adguard.yaml
-  - ./synology.yaml
-  - ./ldap.yaml
+  - ./authelia/ks.yaml
