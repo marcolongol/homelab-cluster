@@ -84,6 +84,7 @@ spec:
           existingSecret: minecraft-secret
           secretKey: CF_API_KEY
         slug: ftb-oceanblock-2
+        fileId: "6534763"
       memory: 16G
       difficulty: normal
       spawnProtection: 0
