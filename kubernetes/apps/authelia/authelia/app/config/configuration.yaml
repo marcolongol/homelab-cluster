@@ -73,6 +73,12 @@ access_control:
         - "echo-server.${SECRET_DOMAIN}"
       policy: bypass
 
+    - domain:
+        - "actual.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:actual_users"
+
     - domain: "*.${SECRET_DOMAIN}"
       policy: bypass
       methods:
