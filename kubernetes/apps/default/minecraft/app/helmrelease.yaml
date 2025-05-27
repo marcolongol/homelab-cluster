@@ -28,7 +28,7 @@ spec:
       hostname: "minecraft.${SECRET_DOMAIN}"
     image:
       repository: ghcr.io/itzg/minecraft-server
-      tag: 2025.4.2-java21
+      tag: 2025.5.1-java21
     resources:
       requests:
         cpu: 4000m
