@@ -11,3 +11,4 @@ resources:
   - ./actual/ks.yaml
   - ./nexus/ks.yaml
   - ./minecraft/ks.yaml
+  - ./paperless/ks.yaml

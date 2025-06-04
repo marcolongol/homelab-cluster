@@ -1,0 +1,141 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app paperless
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      paperless:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/reload: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.5
+            envFrom: &envFrom
+              - secretRef:
+                  name: paperless-secret
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 64Mi
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.16.2
+            envFrom: *envFrom
+            env:
+              PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
+              PAPERLESS_PORT: &port 8000
+              PAPERLESS_TIME_ZONE: America/Los_Angeles
+              # Folders
+              PAPERLESS_CONSUMPTION_DIR: /data/nas/incoming
+              PAPERLESS_EXPORT_DIR: /data/nas/outgoing
+              PAPERLESS_DATA_DIR: /data/paperless/data
+              PAPERLESS_MEDIA_ROOT: /data/paperless/media
+              # Folder Importer
+              PAPERLESS_CONSUMER_POLLING: 60
+              PAPERLESS_CONSUMER_RECURSIVE: true
+              PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: true
+              # OCR
+              PAPERLESS_OCR_LANGUAGE: eng
+              PAPERLESS_OCR_LANGUAGES: "eng por"
+              PAPERLESS_OCR_ENABLED: true
+              # Redis
+              PAPERLESS_REDIS: redis://paperless-redis:6379
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 2Gi
+      redis:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/reload: "true"
+        containers:
+          redis:
+            image:
+              repository: docker.io/valkey/valkey
+              tag: 7.2.5
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                cpu: 100m
+                memory: 256Mi
+    service:
+      app:
+        controller: paperless
+        ports:
+          http:
+            port: *port
+            primary: true
+      redis:
+        controller: redis
+        ports:
+          redis:
+            port: 6379
+    persistence:
+      data:
+        enabled: true
+        existingClaim: *app
+        type: persistentVolumeClaim
+        advancedMounts:
+          paperless:
+            app:
+              - path: /data/paperless
+      nas:
+        enabled: true
+        type: nfs
+        server: ${CONFIG_NAS_IP_ADDRESS}
+        path: ${CONFIG_NAS_PAPERLESS_SHARE}
+        advancedMounts:
+          paperless:
+            app:
+              - path: /data/nas
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            add_header Cache-Control "no-store";
+            add_header Pragma "no-cache";
+            add_header X-Frame-Options "SAMEORIGIN";
+            add_header X-XSS-Protection "1; mode=block";
+        hosts:
+          - host: "paperless.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
