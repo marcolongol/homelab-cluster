@@ -79,6 +79,18 @@ access_control:
       subject:
         - "group:actual_users"
 
+    - domain:
+        - "paperless.${SECRET_DOMAIN}"
+      policy: bypass
+      resources:
+        - "^/share/.*$"
+
+    - domain:
+        - "paperless.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:paperless_users"
+
     - domain: "*.${SECRET_DOMAIN}"
       policy: bypass
       methods:
