@@ -27,13 +27,23 @@ spec:
             image:
               repository: lscr.io/linuxserver/orcaslicer
               tag: 2.3.0@sha256:b5f8785643ed966e7d01cc681d13336d1d6f41a42b2a9e252a871c42d8e38b04
+            env:
+              TZ: America/Los_Angeles
+              PUID: "1000"
+              PGID: "1000"
+              DRINODE: /dev/dri/renderD128
             resources:
               requests:
                 cpu: 100m
                 memory: 128M
+                amd.com/gpu: 1
               limits:
                 cpu: 2000m
                 memory: 4Gi
+                amd.com/gpu: 1
+    defaultPodOptions:
+      nodeSelector:
+        feature.node.kubernetes.io/custom-amd-gpu: "true"
     service:
       app:
         controller: orcaslicer
@@ -68,3 +78,12 @@ spec:
           orcaslicer:
             app:
               - path: /config
+      nginx-config:
+        enabled: true
+        type: configMap
+        name: orcaslicer-nginx-config
+        advancedMounts:
+          orcaslicer:
+            app:
+              - path: /etc/nginx/sites-available/default
+                subPath: default.conf
