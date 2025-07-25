@@ -1,15 +1,63 @@
 machine:
   install:
     extraKernelArgs:
-      # - amd_pstate=1
-      - apparmor=0
-      # - cpufreq.default_governor=performance
-      - init_on_alloc=1
-      - init_on_free=1
-      - mitigations=off
-      - nvme_core.multipath=1
-      - security=none
+      # CPU Performance and Power Management
+      - amd_pstate=1 # Uncomment for AMD CPUs
+      # - cpufreq.default_governor=performance  # Uncomment for max performance
+      # - intel_pstate=active # For Intel CPUs (comment out if AMD)
+
+      # Security hardening (but balanced for homelab)
+      - apparmor=0 # Disabled for simplicity
+      - security=none # Simplified security for homelab
+      - init_on_alloc=1 # Memory security
+      - init_on_free=1 # Memory security
+      - mitigations=off # Disabled for performance (homelab only!)
+
+      # Storage and filesystem optimizations
+      - nvme_core.multipath=1 # NVMe multipath support
+      - elevator=mq-deadline # Better for SSDs with mixed workloads
+
+      # Network optimizations
+      - net.core.default_qdisc=fq # Fair queuing for better network performance
+      - tcp_congestion_control=bbr # Better TCP congestion control
+
+      # Memory management for containers/ZFS
+      - vm.swappiness=10 # Reduce swap usage (good for ZFS)
+      - vm.vfs_cache_pressure=50 # Balance file cache vs other caches
+
+      # ZFS specific optimizations
+      - zfs.zfs_arc_max=8589934592 # Limit ZFS ARC to 8GB (adjust for your RAM)
+
+      # Logging and debugging
+      - quiet # Reduce boot noise
+      - loglevel=3 # Reduce kernel log verbosity
   kernel:
     modules:
+      # Network and NFS modules
+      - name: nfs
+      - name: nfsd
+      - name: nfsv4
+      # Block device and storage modules
+      - name: dm_crypt # For encrypted volumes
+      - name: dm_snapshot # For LVM snapshots
+      - name: dm_thin_pool # For thin provisioning
+      - name: loop # For loop devices
+      - name: overlay # For container overlays
+      # Network modules for advanced networking
+      - name: br_netfilter # For bridge networking
+      - name: ip_vs # For load balancing
+      - name: ip_vs_rr # Round-robin load balancing
+      - name: ip_vs_wrr # Weighted round-robin
+      - name: ip_vs_sh # Source hashing
+      - name: nf_conntrack # Connection tracking
+      # Filesystem modules
+      - name: ext4 # Common filesystem
+      - name: btrfs # Advanced filesystem with snapshots
       - name: xfs
       - name: zfs
+      # SCSI and iSCSI modules (useful for storage)
+      - name: iscsi_tcp # iSCSI over TCP
+      - name: libiscsi # iSCSI library
+      # Hardware monitoring
+      - name: coretemp # CPU temperature monitoring
+      - name: k10temp # AMD CPU temperature (if using AMD)

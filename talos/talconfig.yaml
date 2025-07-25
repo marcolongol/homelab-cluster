@@ -25,7 +25,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/2715fe03b8d1f672d42639c6a2c1123e8665d91e0d2d6a9d9f4243df1d09e375
+    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
@@ -47,7 +47,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/2715fe03b8d1f672d42639c6a2c1123e8665d91e0d2d6a9d9f4243df1d09e375
+    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
@@ -69,7 +69,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/2715fe03b8d1f672d42639c6a2c1123e8665d91e0d2d6a9d9f4243df1d09e375
+    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
