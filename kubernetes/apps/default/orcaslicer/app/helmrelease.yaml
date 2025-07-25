@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app orcaslicer
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      orcaslicer:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/reload: "true"
+        containers:
+          app:
+            image:
+              repository: lscr.io/linuxserver/orcaslicer
+              tag: 2.3.0@sha256:b5f8785643ed966e7d01cc681d13336d1d6f41a42b2a9e252a871c42d8e38b04
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128M
+              limits:
+                cpu: 2000m
+                memory: 4Gi
+    service:
+      app:
+        controller: orcaslicer
+        ports:
+          http:
+            port: &port 3000
+    ingress:
+      app:
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
+          nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Email,Remote-Groups"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            add_header Cache-Control "no-store";
+            add_header Pragma "no-cache";
+            add_header X-Frame-Options "SAMEORIGIN";
+            add_header X-XSS-Protection "1; mode=block";
+        hosts:
+          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      config:
+        enabled: true
+        existingClaim: *app
+        type: persistentVolumeClaim
+        advancedMounts:
+          orcaslicer:
+            app:
+              - path: /config
