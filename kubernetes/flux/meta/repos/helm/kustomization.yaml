@@ -11,5 +11,6 @@ resources:
   - ./external-dns.yaml
   - ./ingress-nginx.yaml
   - ./minecraft.yaml
+  - ./node-feature-discovery.yaml
   - ./openebs-monitoring.yaml
   - ./openebs.yaml

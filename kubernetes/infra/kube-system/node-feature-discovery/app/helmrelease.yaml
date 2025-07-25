@@ -1,0 +1,87 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: node-feature-discovery
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: node-feature-discovery
+      version: 0.17.2
+      sourceRef:
+        kind: HelmRepository
+        name: node-feature-discovery
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    enableNodeFeatureApi: true
+    master:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+    worker:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      config:
+        core:
+          labelSources:
+            - custom
+            - pci
+            - usb
+            - local
+        sources:
+          custom:
+            - name: "intel-gpu"
+              labels:
+                "feature.node.kubernetes.io/custom-intel-gpu": "true"
+              matchFeatures:
+                - feature: pci.device
+                  matchExpressions:
+                    vendor: {op: In, value: ["8086"]}
+                    class: {op: In, value: ["0300"]}
+            - name: "nvidia-gpu"
+              labels:
+                "feature.node.kubernetes.io/custom-nvidia-gpu": "true"
+              matchFeatures:
+                - feature: pci.device
+                  matchExpressions:
+                    vendor: {op: In, value: ["10de"]}
+                    class: {op: In, value: ["0300"]}
+            - name: "amd-gpu"
+              labels:
+                "feature.node.kubernetes.io/custom-amd-gpu": "true"
+              matchFeatures:
+                - feature: pci.device
+                  matchExpressions:
+                    vendor: {op: In, value: ["1002"]}
+                    class: {op: In, value: ["0300"]}
+          pci:
+            deviceClassWhitelist:
+              - "03"
+              - "0b"
+              - "12"
+            deviceLabelFields:
+              - "class"
+              - "vendor"
+              - "device"
+          usb:
+            deviceClassWhitelist:
+              - "02"
+              - "03"
+              - "0e"
+              - "ef"
+              - "fe"
+              - "ff"
