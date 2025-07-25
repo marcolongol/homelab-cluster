@@ -1,7 +1,45 @@
 machine:
   sysctls:
+    # File system and inotify (existing - good for file watching)
     fs.inotify.max_user_watches: "1048576" # Watchdog
     fs.inotify.max_user_instances: "8192" # Watchdog
+    fs.file-max: "2097152" # Max open file descriptors
+    fs.nr_open: "1048576" # Per-process file descriptor limit
+
+    # Network core settings (existing + additions)
     net.core.rmem_max: "7500000" # Cloudflared | QUIC
     net.core.wmem_max: "7500000" # Cloudflared | QUIC
-    vm.nr_hugepages: "2048" # OpenEBS
+    net.core.netdev_max_backlog: "5000" # Network packet backlog
+    net.core.somaxconn: "65535" # Max connection backlog
+
+    # TCP/IP optimizations for applications
+    net.ipv4.tcp_keepalive_time: "600" # TCP keepalive time
+    net.ipv4.tcp_keepalive_intvl: "60" # TCP keepalive interval
+    net.ipv4.tcp_keepalive_probes: "3" # TCP keepalive probes
+    net.ipv4.ip_local_port_range: "1024 65535" # Port range for outbound connections
+    net.ipv4.tcp_fin_timeout: "30" # FIN timeout
+    net.ipv4.tcp_max_syn_backlog: "8192" # SYN backlog
+
+    # Network filtering (important for Kubernetes)
+    net.netfilter.nf_conntrack_max: "1000000" # Connection tracking limit
+    net.netfilter.nf_conntrack_buckets: "262144" # Connection tracking buckets
+
+    # Memory management
+    vm.nr_hugepages: "2048" # OpenEBS (existing)
+    vm.swappiness: "10" # Reduce swapping (good for ZFS)
+    vm.vfs_cache_pressure: "50" # Balance VFS cache
+    vm.dirty_ratio: "15" # Dirty memory ratio
+    vm.dirty_background_ratio: "5" # Background dirty memory
+    vm.max_map_count: "262144" # Memory map areas (good for databases)
+
+    # ZFS specific optimizations
+    vm.dirty_expire_centisecs: "500" # Dirty page expiration (ZFS tuning)
+    vm.dirty_writeback_centisecs: "100" # Write-back frequency (ZFS tuning)
+
+    # Process limits
+    kernel.pid_max: "4194304" # Max process IDs
+    kernel.threads-max: "4194304" # Max threads
+
+    # Security (balanced for homelab)
+    kernel.dmesg_restrict: "1" # Restrict dmesg access
+    kernel.kptr_restrict: "1" # Restrict kernel pointer access
