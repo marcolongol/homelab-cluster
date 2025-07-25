@@ -29,6 +29,12 @@ spec:
     cleanupOnFail: true
     crds: CreateReplace
   values:
+    loki:
+      enabled: false
+
+    alloy:
+      enabled: false
+
     openebs-crds:
       csi:
         volumeSnapshots:
