@@ -19,7 +19,7 @@ spec:
     controllers:
       orcaslicer:
         replicas: 1
-        strategy: RollingUpdate
+        strategy: Recreate
         annotations:
           reloader.stakater.com/reload: "true"
         containers:
@@ -78,6 +78,15 @@ spec:
           orcaslicer:
             app:
               - path: /config
+      nas:
+        enabled: true
+        type: nfs
+        server: ${CONFIG_NAS_IP_ADDRESS}
+        path: ${CONFIG_NAS_ORCASLICER_SHARE}
+        advancedMounts:
+          orcaslicer:
+            app:
+              - path: /config/nas
       nginx-config:
         enabled: true
         type: configMap
