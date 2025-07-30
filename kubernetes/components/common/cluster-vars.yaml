@@ -5,7 +5,7 @@ metadata:
 data:
   CONFIG_OPNSENSE_IP_ADDRESS: 10.0.0.1
   CONFIG_NAS_IP_ADDRESS: 10.0.0.4
-  CONFIG_NAS_k8s_SHARE: "/volume1/Kubernetes Volumes"
+  CONFIG_NAS_k8s_SHARE: "/volume1/K8s"
   CONFIG_NAS_k8s_BACKUP_SHARE: "/volume1/Kubernetes Backups"
   CONFIG_NAS_PAPERLESS_SHARE: "/volume1/Paperless"
   CONFIG_NAS_ORCASLICER_SHARE: "/volume1/Orcaslicer"

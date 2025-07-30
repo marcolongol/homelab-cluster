@@ -5,7 +5,7 @@ metadata:
 allowVolumeExpansion: true
 parameters:
   server: ${CONFIG_NAS_IP_ADDRESS}
-  share: ${CONFIG_NAS_k8s_SHARE}
+  share: ${CONFIG_NAS_k8s_SHARE}/Volumes
   subDir: ${CONFIG_NAS_k8s_SUBDIR}
   mountPermissions: "775"
 mountOptions:
