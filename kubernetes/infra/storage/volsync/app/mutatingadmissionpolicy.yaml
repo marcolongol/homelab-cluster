@@ -48,7 +48,7 @@ spec:
                 name: "repository",
                 nfs: Object.spec.template.spec.volumes.nfs{
                   server: "${CONFIG_NAS_IP_ADDRESS}",
-                  path: "${CONFIG_NAS_k8s_BACKUP_SHARE}"
+                  path: "${CONFIG_NAS_k8s_SHARE}/Backups"
                 }
               }
             }

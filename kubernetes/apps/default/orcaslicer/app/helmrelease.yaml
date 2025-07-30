@@ -82,7 +82,7 @@ spec:
         enabled: true
         type: nfs
         server: ${CONFIG_NAS_IP_ADDRESS}
-        path: ${CONFIG_NAS_ORCASLICER_SHARE}
+        path: "${CONFIG_NAS_DEFAULT_SHARE}/Apps/Orcaslicer"
         advancedMounts:
           orcaslicer:
             app:
