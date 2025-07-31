@@ -12,3 +12,4 @@ resources:
   - ./minecraft/ks.yaml
   - ./paperless/ks.yaml
   - ./orcaslicer/ks.yaml
+  - ./webex-jira-chief/ks.yaml
