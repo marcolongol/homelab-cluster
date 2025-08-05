@@ -73,6 +73,11 @@ access_control:
       subject:
         - "group:orcaslicer_users"
     - domain:
+        - "freecad.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:freecad_users"
+    - domain:
         - "paperless.${SECRET_DOMAIN}"
       policy: bypass
       resources:
