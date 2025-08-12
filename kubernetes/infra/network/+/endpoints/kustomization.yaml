@@ -7,3 +7,4 @@ resources:
   - ./adguard.yaml
   - ./synology.yaml
   - ./ldap.yaml
+  - ./ftp.yaml

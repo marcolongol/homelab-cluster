@@ -7,3 +7,4 @@ resources:
   - ./synology.yaml
   - ./firewall.yaml
   - ./ldap.yaml
+  - ./ftp.yaml

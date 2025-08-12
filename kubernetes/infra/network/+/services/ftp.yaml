@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.26.1-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftp
+  annotations:
+    lbipam.cilium.io/ips: "10.0.11.207"
+    coredns.io/hostname: "ftp.${SECRET_DOMAIN}"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: ftp-22
+      protocol: TCP
+      port: 22
