@@ -1,0 +1,15 @@
+---
+formatter:
+  type: basic
+  retain_line_breaks_single: true
+  retain_line_breaks: true
+  disallow_anchors: false
+  drop_merge_tag: false
+  pad_line_comments: 2
+  scan_folded_as_literal: false
+  indentless_arrays: false
+  unwrap_flow_style: false
+  line_ending: lf
+  indent: 2
+  include_document_start: true
+  trim_trailing_whitespace: true
