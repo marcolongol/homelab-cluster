@@ -43,30 +43,32 @@ jobs:
     name: Renovate
     runs-on: ubuntu-latest
     steps:
-      - uses: 1password/load-secrets-action/configure@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+      - uses: 1password/load-secrets-action/configure@13f58eec611f8e5db52ec16247f58c508398f3e6  # v3
         with:
           connect-host: ${{ env.OP_CONNECT_HOST }}
           connect-token: ${{ env.OP_CONNECT_TOKEN }}
 
-      - uses: 1password/load-secrets-action@13f58eec611f8e5db52ec16247f58c508398f3e6 # v3
+      - uses: 1password/load-secrets-action@13f58eec611f8e5db52ec16247f58c508398f3e6  # v3
+        with:
+          export-env: true
         env:
           BOT_APP_ID: op://homelab/GITHUB/GITHUB_APP_ID
           BOT_APP_PRIVATE_KEY: op://homelab/GITHUB/GITHUB_APP_PRIVATE_KEY
 
       - name: Generate Token
-        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
+        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b  # v2.1.1
         id: app-token
         with:
           app-id: "${{ env.BOT_APP_ID }}"
           private-key: "${{ env.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           token: "${{ steps.app-token.outputs.token }}"
 
       - name: Run Renovate
-        uses: renovatebot/github-action@85b17ebd5abf43d1c34c01bd4c8dbb8d45bbc2c7 # v43.0.7
+        uses: renovatebot/github-action@85b17ebd5abf43d1c34c01bd4c8dbb8d45bbc2c7  # v43.0.7
         env:
           LOG_LEVEL: "${{ inputs.logLevel || 'debug' }}"
           RENOVATE_AUTODISCOVER: true
