@@ -87,12 +87,12 @@ spec:
           orcaslicer:
             app:
               - path: /config/nas
-      nginx-config:
-        enabled: true
-        type: configMap
-        name: orcaslicer-nginx-config
-        advancedMounts:
-          orcaslicer:
-            app:
-              - path: /etc/nginx/sites-available/default
-                subPath: default.conf
+      # nginx-config:
+      #   enabled: true
+      #   type: configMap
+      #   name: orcaslicer-nginx-config
+      #   advancedMounts:
+      #     orcaslicer:
+      #       app:
+      #         - path: /etc/nginx/sites-available/default
+      #           subPath: default.conf
