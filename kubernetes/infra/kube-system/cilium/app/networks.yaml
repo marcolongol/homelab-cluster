@@ -36,6 +36,8 @@ spec:
   virtualRouters:
     - localASN: 64514
       exportPodCIDR: false
+      serviceAdvertisements:
+        - LoadBalancerIP
       serviceSelector:
         matchExpressions:
           - key: thisFakeSelector
