@@ -87,6 +87,15 @@ access_control:
       policy: one_factor
       subject:
         - "group:paperless_users"
+    - domain:
+        - "webmail.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:mail_users"
+    - domain:
+        - "autoconfig.${SECRET_DOMAIN}"
+        - "autodiscover.${SECRET_DOMAIN}"
+      policy: bypass
     - domain: "*.${SECRET_DOMAIN}"
       policy: bypass
       methods:
