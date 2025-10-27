@@ -44,7 +44,7 @@ spec:
           roundcubemail:
             image:
               repository: roundcube/roundcubemail
-              tag: 1.6.9-apache
+              tag: 1.6.10-apache
             env:
               OVERRIDE_HOSTNAME: webmail.${SECRET_DOMAIN}
               ROUNDCUBE_DB_TYPE: sqlite
@@ -67,7 +67,7 @@ spec:
               ACCOUNT_PROVISIONER: LDAP
               DOVECOT_AUTH_BIND: yes
               DOVECOT_USER_ATTRS: "=uid=5000,=gid=5000,=home=/var/mail/%Ln,=mail=maildir:~/Maildir"
-              DOVECOT_USER_FILTER: "(&(objectClass=inetOrgPerson)(|(uid=%u)(mail=%u)))"
+              DOVECOT_USER_FILTER: "(&(objectClass=inetOrgPerson)(mail=%u))"
               ENABLE_AMAVIS: "0"
               ENABLE_FAIL2BAN: "1"
               ENABLE_OPENDKIM: "1"
@@ -87,20 +87,32 @@ spec:
                   secretKeyRef:
                     name: ldap-secret
                     key: LDAP_SEARCH_BASE
-              LDAP_QUERY_FILTER_ALIAS: "(&(objectClass=inetOrgPerson)(|(uid=%u)(mail=%u)))"
+              LDAP_QUERY_FILTER_ALIAS: "(&(objectClass=inetOrgPerson)(mail=%u))"
               LDAP_QUERY_FILTER_DOMAIN: "(mail=*@%s)"
               LDAP_QUERY_FILTER_GROUP: "(&(objectClass=webmail_user)(uid=%s))"
-              LDAP_QUERY_FILTER: "(&(objectClass=inetOrgPerson)(|(uid=%u)(mail=%u)))"
+              LDAP_QUERY_FILTER: "(&(objectClass=inetOrgPerson)(mail=%u))"
               LDAP_SERVER_HOST: ldap://ldap.${SECRET_DOMAIN}
-              LOG_LEVEL: debug
+              LOG_LEVEL: info
               OVERRIDE_HOSTNAME: mail.${SECRET_DOMAIN}
+              RELAY_HOST: smtp.mailgun.org
+              RELAY_PORT: "587"
+              RELAY_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: RELAY_USER
+              RELAY_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: RELAY_PASSWORD
               POSTMASTER_ADDRESS: postmaster@${SECRET_DOMAIN}
               SPAMASSASSIN_SPAM_TO_INBOX: "1"
               SPOOF_PROTECTION: "0"
               SSL_CERT_PATH: /tmp/dms/custom-certs/public.crt
               SSL_KEY_PATH: /tmp/dms/custom-certs/private.key
               SSL_TYPE: manual
-              SUPERVISOR_LOGLEVEL: debug
+              SUPERVISOR_LOGLEVEL: info
             resources:
               requests:
                 cpu: 100m
@@ -180,10 +192,6 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-          nginx.ingress.kubernetes.io/auth-method: "GET"
-          nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/authz/auth-request"
-          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
-          nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Groups,Remote-Email"
         hosts:
           - host: "autoconfig.${SECRET_DOMAIN}"
             paths:
@@ -195,10 +203,6 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-          nginx.ingress.kubernetes.io/auth-method: "GET"
-          nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/authz/auth-request"
-          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
-          nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Groups,Remote-Email"
         hosts:
           - host: "autodiscover.${SECRET_DOMAIN}"
             paths:
@@ -214,6 +218,11 @@ spec:
           nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/authz/auth-request"
           nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
           nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Groups,Remote-Email"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            add_header X-Frame-Options "SAMEORIGIN" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header X-XSS-Protection "1; mode=block" always;
+            add_header Referrer-Policy "no-referrer-when-downgrade" always;
         hosts:
           - host: "webmail.${SECRET_DOMAIN}"
             paths:
