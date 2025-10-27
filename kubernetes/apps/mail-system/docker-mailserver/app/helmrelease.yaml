@@ -1,0 +1,282 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app docker-mailserver
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      docker-mailserver:
+        strategy: Recreate
+        containers:
+          autodiscover:
+            image:
+              repository: monogramm/autodiscover-email-settings
+              tag: latest
+            env:
+              OVERRIDE_HOSTNAME: autodiscover.${SECRET_DOMAIN}
+              COMPANY_NAME: "${SECRET_DOMAIN} Mail"
+              SUPPORT_URL: "https://autodiscover.${SECRET_DOMAIN}"
+              IMAP_HOST: mail.${SECRET_DOMAIN}
+              IMAP_PORT: "143"
+              IMAP_SOCKET: "SSL"
+              SMTP_HOST: mail.${SECRET_DOMAIN}
+              SMTP_PORT: "587"
+              SMTP_SOCKET: "STARTTLS"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
+          roundcubemail:
+            image:
+              repository: roundcube/roundcubemail
+              tag: 1.6.10-apache
+            env:
+              OVERRIDE_HOSTNAME: webmail.${SECRET_DOMAIN}
+              ROUNDCUBE_DB_TYPE: sqlite
+              ROUNDCUBEMAIL_SKIN: elastic
+              ROUNDCUBEMAIL_DEFAULT_HOST: tls://mail.${SECRET_DOMAIN}
+              ROUNDCUBEMAIL_DEFAULT_PORT: "143"
+              ROUNDCUBEMAIL_SMTP_SERVER: tls://mail.${SECRET_DOMAIN}
+              ROUNDCUBEMAIL_SMTP_PORT: "587"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+          docker-mailserver:
+            image:
+              repository: ghcr.io/docker-mailserver/docker-mailserver
+              tag: 14.0.0
+            env:
+              ACCOUNT_PROVISIONER: LDAP
+              DOVECOT_AUTH_BIND: yes
+              DOVECOT_USER_ATTRS: "=uid=5000,=gid=5000,=home=/var/mail/%Ln,=mail=maildir:~/Maildir"
+              DOVECOT_USER_FILTER: "(&(objectClass=inetOrgPerson)(mail=%u))"
+              ENABLE_AMAVIS: "0"
+              ENABLE_FAIL2BAN: "1"
+              ENABLE_OPENDKIM: "1"
+              ENABLE_OPENDMARC: "1"
+              LDAP_BIND_DN:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: LDAP_BIND_DN
+              LDAP_BIND_PW:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: LDAP_BIND_PW
+              LDAP_SEARCH_BASE:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: LDAP_SEARCH_BASE
+              LDAP_QUERY_FILTER_ALIAS: "(&(objectClass=inetOrgPerson)(mail=%u))"
+              LDAP_QUERY_FILTER_DOMAIN: "(mail=*@%s)"
+              LDAP_QUERY_FILTER_GROUP: "(&(objectClass=webmail_user)(uid=%s))"
+              LDAP_QUERY_FILTER: "(&(objectClass=inetOrgPerson)(mail=%u))"
+              LDAP_SERVER_HOST: ldap://ldap.${SECRET_DOMAIN}
+              LOG_LEVEL: info
+              OVERRIDE_HOSTNAME: mail.${SECRET_DOMAIN}
+              RELAY_HOST: smtp.mailgun.org
+              RELAY_PORT: "587"
+              RELAY_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: RELAY_USER
+              RELAY_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: ldap-secret
+                    key: RELAY_PASSWORD
+              POSTMASTER_ADDRESS: postmaster@${SECRET_DOMAIN}
+              SPAMASSASSIN_SPAM_TO_INBOX: "1"
+              SPOOF_PROTECTION: "0"
+              SSL_CERT_PATH: /tmp/dms/custom-certs/public.crt
+              SSL_KEY_PATH: /tmp/dms/custom-certs/private.key
+              SSL_TYPE: manual
+              SUPERVISOR_LOGLEVEL: info
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/bash
+                      - -c
+                      - "supervisorctl status | grep -E 'RUNNING|EXITED' || exit 1"
+                  initialDelaySeconds: 120
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/bash
+                      - -c
+                      - "supervisorctl status | grep -E 'RUNNING|EXITED' || exit 1"
+                  initialDelaySeconds: 60
+                  periodSeconds: 15
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+    service:
+      app:
+        controller: docker-mailserver
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "10.0.11.208"
+          coredns.io/hostname: "mail.${SECRET_DOMAIN}"
+        ports:
+          http:
+            port: 80
+            targetPort: 80
+            protocol: TCP
+          https:
+            port: 443
+            targetPort: 8000
+            protocol: TCP
+          smtp:
+            primary: true
+            port: 25
+            targetPort: 25
+            protocol: TCP
+          submission:
+            port: 587
+            targetPort: 587
+            protocol: TCP
+          imap:
+            port: 143
+            targetPort: 143
+            protocol: TCP
+          imaps:
+            port: 993
+            targetPort: 993
+            protocol: TCP
+          pop3:
+            port: 465
+            targetPort: 465
+            protocol: TCP
+          pop3s:
+            port: 995
+            targetPort: 995
+            protocol: TCP
+    ingress:
+      autoconfig:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+        hosts:
+          - host: "autoconfig.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: https
+      autodiscover:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+        hosts:
+          - host: "autodiscover.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: https
+      webmail:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+          nginx.ingress.kubernetes.io/auth-method: "GET"
+          nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/authz/auth-request"
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
+          nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Groups,Remote-Email"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            add_header X-Frame-Options "SAMEORIGIN" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header X-XSS-Protection "1; mode=block" always;
+            add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        hosts:
+          - host: "webmail.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      tls:
+        type: secret
+        name: docker-mailserver-tls
+        globalMounts:
+          - path: /tmp/dms/custom-certs/private.key
+            subPath: tls.key
+            readOnly: true
+          - path: /tmp/dms/custom-certs/public.crt
+            subPath: tls.crt
+            readOnly: true
+      spf-config:
+        type: configMap
+        name: docker-mailserver-spf-config
+        globalMounts:
+          - path: /etc/postfix-policyd-spf-python/policyd-spf.conf
+            subPath: policyd-spf.conf
+            readOnly: true
+      mail-data:
+        type: persistentVolumeClaim
+        storageClass: openebs-replicated
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        retain: true
+        globalMounts:
+          - path: /var/mail
+      mail-state:
+        type: persistentVolumeClaim
+        storageClass: openebs-replicated
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        retain: true
+        globalMounts:
+          - path: /var/mail-state
+      mail-logs:
+        type: persistentVolumeClaim
+        storageClass: openebs-replicated
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        retain: false
+        globalMounts:
+          - path: /var/log/mail
+      mail-config:
+        type: persistentVolumeClaim
+        storageClass: openebs-replicated
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        retain: true
+        globalMounts:
+          - path: /tmp/docker-mailserver
