@@ -19,12 +19,12 @@ spec:
   values:
     controllers:
       nexus:
-        strategy: RollingUpdate
+        strategy: Recreate
         initContainers:
           init-nexus-data:
             image:
               repository: busybox
-              tag: latest
+              tag: 1.37.0
             command:
               - /bin/sh
               - -c
@@ -38,10 +38,10 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 64M
+                memory: 32M
               limits:
-                cpu: 100m
-                memory: 128M
+                cpu: 50m
+                memory: 64M
         containers:
           app:
             image:
@@ -52,17 +52,50 @@ spec:
                 value: /nexus-data
               - name: INSTALL4J_ADD_OPTS
                 value: |
-                  -Xms2703M -Xmx2703M
-                  -XX:MaxDirectMemorySize=2703M
-                  -XX:UnlockExperimentalVMOptions
-                  -XX:+UseCGroupMemoryLimitForHeap
+                  -Xms768M -Xmx768M
+                  -XX:MaxDirectMemorySize=512M
+                  -XX:+UseContainerSupport
             resources:
               requests:
-                cpu: 100m
-                memory: 128M
+                cpu: 250m
+                memory: 1536M
               limits:
                 cpu: 1000m
                 memory: 2Gi
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /service/rest/v1/status
+                    port: 8081
+                  initialDelaySeconds: 120
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /service/rest/v1/status
+                    port: 8081
+                  initialDelaySeconds: 60
+                  periodSeconds: 15
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /service/rest/v1/status
+                    port: 8081
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 30
             securityContext:
               runAsUser: 200
               runAsGroup: 200
@@ -92,14 +125,13 @@ spec:
       app:
         className: internal
         annotations:
-          nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+          nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
           nginx.ingress.kubernetes.io/ssl-redirect: "true"
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-          nginx.ingress.kubernetes.io/proxy-buffering: "on"
-          nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-          nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-buffering: "off"
+          nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
           nginx.ingress.kubernetes.io/proxy-cache: "off"
         hosts:
           - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
@@ -111,14 +143,13 @@ spec:
       registry:
         className: internal
         annotations:
-          nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+          nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
           nginx.ingress.kubernetes.io/ssl-redirect: "true"
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-          nginx.ingress.kubernetes.io/proxy-buffering: "on"
-          nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-          nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-buffering: "off"
+          nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
           nginx.ingress.kubernetes.io/proxy-cache: "off"
         hosts:
           - host: registry.${SECRET_DOMAIN}
