@@ -35,6 +35,10 @@ authentication_backend:
       mail: mail
       group_name: cn
       member_of: memberOf
+regulation:
+  max_retries: 5
+  find_time: 2m
+  ban_time: 5m
 session:
   name: authelia_session
   same_site: lax
@@ -87,6 +91,17 @@ access_control:
       policy: one_factor
       subject:
         - "group:paperless_users"
+    - domain:
+        - "synology.${SECRET_DOMAIN}"
+      policy: bypass
+      resources:
+        - "^/sharing/.*$"
+        - "^/webman/modules/FileBrowser/images/.*$"
+        - "^/webman/3rdparty/.*$"
+        - "^/webapi/entry.cgi.*[?&]_sharing_id=.*$"
+    - domain:
+        - "synology.${SECRET_DOMAIN}"
+      policy: one_factor
     - domain: "*.${SECRET_DOMAIN}"
       policy: bypass
       methods:
