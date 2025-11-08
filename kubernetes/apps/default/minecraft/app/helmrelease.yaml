@@ -52,8 +52,10 @@ spec:
       coredns.io/hostname: "rcon.${SECRET_DOMAIN}"
     minecraftServer:
       eula: true
-      version: 1.21.1
-      type: AUTO_CURSEFORGE
+      type: VANILLA
+      version: 1.21.10
+      downloadWorldUrl: "https://www.dropbox.com/scl/fi/d0gw0q3mv5ylybovweb1l/Novo-mundo.zip?rlkey=8ykxp0kt9hmxqpeu15r02nnrm&st=zg3cop8y&dl=1"
+      downloadModpackUrl: "https://www.dropbox.com/scl/fi/mh68v7oji19hast7ivibf/Gio-s-modpack.zip?rlkey=grqqznw27hviveekvsbl0ioih&st=i0evqyb2&dl=1"
       forceReDownload: true
       jvmXXOpts: |
         -XX:+UseG1GC
