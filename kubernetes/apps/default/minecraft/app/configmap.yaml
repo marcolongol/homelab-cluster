@@ -2,6 +2,27 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: minecraft-config
-  namespace: minecraft-system
+  namespace: default
 data:
   ALLOW_FLIGHT: "true"
+  ENABLE_WHITELIST: "false"
+  # Network timeout settings to prevent disconnections
+  NETWORK_COMPRESSION_THRESHOLD: "256"
+  # Player idle timeout (0 = disabled, good for modded servers with loading times)
+  PLAYER_IDLE_TIMEOUT: "0"
+  # Disable rate limiting which can cause disconnects
+  RATE_LIMIT: "0"
+  # Max players
+  MAX_PLAYERS: "20"
+  # Use Aikar's flags is already configured via jvmXXOpts
+  USE_AIKAR_FLAGS: "false"
+  # Sync chunk writes to prevent desyncs on block break
+  SYNC_CHUNK_WRITES: "true"
+  # Simulation distance (separate from view distance, affects block updates)
+  SIMULATION_DISTANCE: "10"
+  # Enable command blocks and functions
+  ENABLE_COMMAND_BLOCK: "true"
+  # CurseForge modpack zip with manifest.json to process
+  CF_MODPACK_ZIP: "https://www.dropbox.com/scl/fi/mh68v7oji19hast7ivibf/Gio-s-modpack.zip?rlkey=grqqznw27hviveekvsbl0ioih&st=i0evqyb2&dl=1"
+  # Dummy slug required by AUTO_CURSEFORGE (actual modpack comes from CF_MODPACK_ZIP)
+  CF_SLUG: "all-the-mods-10"
