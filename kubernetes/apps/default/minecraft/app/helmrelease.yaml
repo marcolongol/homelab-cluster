@@ -52,9 +52,11 @@ spec:
       coredns.io/hostname: "rcon.${SECRET_DOMAIN}"
     minecraftServer:
       eula: true
-      type: AUTO_CURSEFORGE
+      type: FORGE
       version: 1.21.10
       downloadWorldUrl: "https://www.dropbox.com/scl/fi/d0gw0q3mv5ylybovweb1l/Novo-mundo.zip?rlkey=8ykxp0kt9hmxqpeu15r02nnrm&st=zg3cop8y&dl=1"
+      downloadModpackUrl: "https://www.dropbox.com/scl/fi/jeykmmlr0c5t4jjobo5kh/mods.zip?rlkey=sfy7qqi6zsdxq6f1cx8gdw4g1&st=e0w7yzm9&dl=1"
+      removeOldMods: true
       forceReDownload: true
       jvmXXOpts: |
         -XX:+UseG1GC
@@ -80,11 +82,6 @@ spec:
         serviceType: LoadBalancer
         existingSecret: minecraft-secret
         secretKey: RCON_PASSWORD
-      autoCurseForge:
-        apiKey:
-          existingSecret: minecraft-secret
-          secretKey: CF_API_KEY
-        # slug: ftb-oceanblock-2
       memory: 16G
       difficulty: normal
       spawnProtection: 0

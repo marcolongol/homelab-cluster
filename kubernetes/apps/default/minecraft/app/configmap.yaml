@@ -20,9 +20,3 @@ data:
   SYNC_CHUNK_WRITES: "true"
   # Simulation distance (separate from view distance, affects block updates)
   SIMULATION_DISTANCE: "10"
-  # Enable command blocks and functions
-  ENABLE_COMMAND_BLOCK: "true"
-  # CurseForge modpack zip with manifest.json to process
-  CF_MODPACK_ZIP: "https://www.dropbox.com/scl/fi/mh68v7oji19hast7ivibf/Gio-s-modpack.zip?rlkey=grqqznw27hviveekvsbl0ioih&st=i0evqyb2&dl=1"
-  # Dummy slug required by AUTO_CURSEFORGE (actual modpack comes from CF_MODPACK_ZIP)
-  CF_SLUG: "all-the-mods-10"
