@@ -58,7 +58,7 @@ spec:
           app:
             image:
               repository: sonatype/nexus3
-              tag: 3.86.2-alpine
+              tag: 3.88.0-alpine
             envFrom: *envFrom
             env:
               - name: NEXUS_DATA
