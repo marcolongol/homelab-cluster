@@ -13,4 +13,4 @@ resources:
   - ./paperless/ks.yaml
   - ./orcaslicer/ks.yaml
   - ./freecad/ks.yaml
-  - ./webex-jira-chief/ks.yaml
+  # - ./webex-jira-chief/ks.yaml
