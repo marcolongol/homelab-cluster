@@ -9,7 +9,7 @@ resources:
   - ./echo/ks.yaml
   - ./actual/ks.yaml
   - ./nexus/ks.yaml
-  - ./minecraft/ks.yaml
+  # - ./minecraft/ks.yaml
   - ./paperless/ks.yaml
   - ./orcaslicer/ks.yaml
   - ./freecad/ks.yaml
