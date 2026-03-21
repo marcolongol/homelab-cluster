@@ -20,7 +20,7 @@ on:
       logLevel:
         description: Log Level
         type: choice
-        default: debug
+        default: info
         options:
           - debug
           - info
@@ -43,12 +43,12 @@ jobs:
     name: Renovate
     runs-on: ubuntu-latest
     steps:
-      - uses: 1password/load-secrets-action/configure@dafbe7cb03502b260e2b2893c753c352eee545bf  # v3
+      - uses: 1password/load-secrets-action/configure@dafbe7cb03502b260e2b2893c753c352eee545bf # v3
         with:
           connect-host: ${{ env.OP_CONNECT_HOST }}
           connect-token: ${{ env.OP_CONNECT_TOKEN }}
 
-      - uses: 1password/load-secrets-action@dafbe7cb03502b260e2b2893c753c352eee545bf  # v3
+      - uses: 1password/load-secrets-action@dafbe7cb03502b260e2b2893c753c352eee545bf # v3
         with:
           export-env: true
         env:
@@ -56,19 +56,19 @@ jobs:
           BOT_APP_PRIVATE_KEY: op://homelab/GITHUB/GITHUB_APP_PRIVATE_KEY
 
       - name: Generate Token
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349  # v2.2.2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         id: app-token
         with:
           app-id: "${{ env.BOT_APP_ID }}"
           private-key: "${{ env.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           token: "${{ steps.app-token.outputs.token }}"
 
       - name: Run Renovate
-        uses: renovatebot/github-action@eaf12548c13069dcc28bb75c4ee4610cdbe400c5  # v44.2.6
+        uses: renovatebot/github-action@eaf12548c13069dcc28bb75c4ee4610cdbe400c5 # v44.2.6
         env:
           LOG_LEVEL: "${{ inputs.logLevel || 'debug' }}"
           RENOVATE_AUTODISCOVER: true
