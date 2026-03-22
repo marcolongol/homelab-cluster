@@ -92,6 +92,11 @@ access_control:
       subject:
         - "group:paperless_users"
     - domain:
+        - "prefect.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:prefect_users"
+    - domain:
         - "synology.${SECRET_DOMAIN}"
       policy: bypass
       resources:
