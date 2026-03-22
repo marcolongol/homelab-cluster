@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prefect-worker
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: prefect-worker
+      version: 2026.3.19205444
+      sourceRef:
+        kind: HelmRepository
+        name: prefect
+        namespace: flux-system
+      interval: 15m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    worker:
+      apiConfig: selfHostedServer
+      selfHostedServerApiConfig:
+        apiUrl: http://prefect-server.default.svc.cluster.local:4200/api
+      config:
+        type: kubernetes
+        workPool: default
+        queryInterval: 5
+        prefetchSeconds: 10
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+    serviceAccount:
+      create: true
+    role:
+      create: true
