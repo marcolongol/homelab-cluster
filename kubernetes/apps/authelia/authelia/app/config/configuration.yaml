@@ -93,6 +93,11 @@ access_control:
         - "group:paperless_users"
     - domain:
         - "prefect.${SECRET_DOMAIN}"
+      policy: bypass
+      resources:
+        - "^/api/.*$"
+    - domain:
+        - "prefect.${SECRET_DOMAIN}"
       policy: one_factor
       subject:
         - "group:prefect_users"
