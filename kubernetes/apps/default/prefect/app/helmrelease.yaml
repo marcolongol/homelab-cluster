@@ -57,17 +57,6 @@ spec:
         limits:
           cpu: 1000m
           memory: 1Gi
-      initContainers:
-        - name: init-db
-          image: ghcr.io/home-operations/postgres-init:18.3
-          envFrom:
-            - secretRef:
-                name: prefect-secret
-          resources:
-            requests:
-              cpu: 10m
-            limits:
-              memory: 64Mi
     ingress:
       enabled: true
       className: internal
