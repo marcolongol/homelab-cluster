@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sandbox-init-db
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-db
+          image: ghcr.io/home-operations/postgres-init:18.3
+          envFrom:
+            - secretRef:
+                name: sandbox-init-db-secret
+          env:
+            - name: INIT_POSTGRES_HOST
+              value: cloudnative-pg-sandbox-rw-lb.cloudnative-pg.svc.cluster.local
+            - name: INIT_POSTGRES_SUPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudnative-pg-secret
+                  key: username
+            - name: INIT_POSTGRES_SUPER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: cloudnative-pg-secret
+                  key: password
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              memory: 64Mi
