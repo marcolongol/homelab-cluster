@@ -19,13 +19,16 @@ clusterSvcNets: ["10.43.0.0/16"]
 cniConfig:
   name: none
 
+imageFactory:
+  registryURL: factory.talos.dev
+  installerURLTmpl: "{{.RegistryURL}}/metal-installer/{{.ID}}:{{.Version}}"
+
 nodes:
   - hostname: "thinkctr01"
     ipAddress: "10.0.10.10"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
@@ -47,7 +50,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
+
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
@@ -69,7 +72,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/metal-installer/4449f3e3ee16a1743734f66b6d0868ee2205150a0eb82f19859193a827215f7a
+
     controlPlane: true
     nodeLabels:
       openebs.io/engine: "mayastor"
@@ -97,6 +100,32 @@ patches:
 
 # Controller patches
 controlPlane:
+  schematic:
+    customization:
+      extraKernelArgs:
+        - amd_pstate=1
+        - apparmor=0
+        - security=none
+        - init_on_alloc=1
+        - init_on_free=1
+        - mitigations=off
+        - nvme_core.multipath=1
+        - elevator=mq-deadline
+        - quiet
+        - loglevel=3
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/amd-ucode
+          - siderolabs/amdgpu
+          - siderolabs/binfmt-misc
+          - siderolabs/btrfs
+          - siderolabs/fuse3
+          - siderolabs/glibc
+          - siderolabs/iscsi-tools
+          - siderolabs/nfsd
+          - siderolabs/nvme-cli
+          - siderolabs/util-linux-tools
+          - siderolabs/zfs
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
