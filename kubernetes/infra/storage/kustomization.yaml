@@ -9,3 +9,11 @@ resources:
   - ./csi-driver-nfs/ks.yaml
   - ./openebs/ks.yaml
   - ./volsync/ks.yaml
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: storage
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
