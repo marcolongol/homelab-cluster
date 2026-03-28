@@ -85,3 +85,14 @@ spec:
                 service:
                   identifier: app
                   port: http
+      h2way:
+        className: h2way-external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${H2WAY_DOMAIN}"
+        hosts:
+          - host: "{{ .Release.Name }}.${H2WAY_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http

@@ -7,4 +7,10 @@ ingress:
     service: &svc https://external-ingress-nginx-controller.network.svc.cluster.local:443
   - hostname: "*.${SECRET_DOMAIN}"
     service: *svc
+  - hostname: "${H2WAY_DOMAIN}"
+    service: &h2way https://h2way-ingress-nginx-controller.network.svc.cluster.local:443
+  - hostname: "*.${H2WAY_DOMAIN}"
+    service: *h2way
+  - hostname: "*.staging.${H2WAY_DOMAIN}"
+    service: *h2way
   - service: http_status:404

@@ -39,11 +39,12 @@ spec:
       - --events
       - --ignore-ingress-tls-spec
       - --ingress-class=external
+      - --ingress-class=h2way-external
     policy: sync
     sources: ["crd", "ingress"]
     txtPrefix: k8s.
     txtOwnerId: default
-    domainFilters: ["${SECRET_DOMAIN}"]
+    domainFilters: ["${SECRET_DOMAIN}", "${H2WAY_DOMAIN}"]
     serviceMonitor:
       enabled: true
     podAnnotations:

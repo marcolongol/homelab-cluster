@@ -45,10 +45,10 @@ spec:
     deploymentAnnotations:
       reloader.stakater.com/auto: "true"
     serviceAnnotations:
-      lbipam.cilium.io/ips: "10.0.11.203"
+      lbipam.cilium.io/ips: "10.0.11.210"
       coredns.io/hostname: "minecraft.${SECRET_DOMAIN}"
     rconServiceAnnotations:
-      lbipam.cilium.io/ips: "10.0.11.204"
+      lbipam.cilium.io/ips: "10.0.11.211"
       coredns.io/hostname: "rcon.${SECRET_DOMAIN}"
     minecraftServer:
       eula: true
