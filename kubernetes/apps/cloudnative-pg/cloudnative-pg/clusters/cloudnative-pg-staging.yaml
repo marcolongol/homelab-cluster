@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cloudnative-pg-sandbox
+  name: cloudnative-pg-staging
 spec:
   instances: 1
 
@@ -48,11 +48,11 @@ spec:
         - selectorType: rw
           serviceTemplate:
             metadata:
-              name: cloudnative-pg-sandbox-rw-lb
+              name: cloudnative-pg-staging-rw-lb
               labels:
-                cnpg.io/cluster: cloudnative-pg-sandbox
+                cnpg.io/cluster: cloudnative-pg-staging
               annotations:
-                lbipam.cilium.io/ips: "10.0.11.208"
-                coredns.io/hostname: "postgres-sandbox.${SECRET_DOMAIN}"
+                lbipam.cilium.io/ips: "10.0.11.209"
+                coredns.io/hostname: "postgres-staging.${SECRET_DOMAIN}"
             spec:
               type: LoadBalancer

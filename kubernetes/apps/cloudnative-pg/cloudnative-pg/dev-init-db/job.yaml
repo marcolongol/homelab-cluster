@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: sandbox-init-db
+  name: dev-init-db
   annotations:
     kustomize.toolkit.fluxcd.io/force: enabled
 spec:
@@ -15,10 +15,10 @@ spec:
           image: ghcr.io/home-operations/postgres-init:18.3
           envFrom:
             - secretRef:
-                name: sandbox-init-db-secret
+                name: dev-init-db-secret
           env:
             - name: INIT_POSTGRES_HOST
-              value: cloudnative-pg-sandbox-rw-lb.cloudnative-pg.svc.cluster.local
+              value: cloudnative-pg-dev-rw-lb.cloudnative-pg.svc.cluster.local
             - name: INIT_POSTGRES_SUPER_USER
               valueFrom:
                 secretKeyRef:

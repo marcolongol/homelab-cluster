@@ -60,7 +60,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudnative-pg-sandbox-init-db
+  name: &app cloudnative-pg-dev-init-db
   namespace: &namespace cloudnative-pg
 spec:
   commonMetadata:
@@ -70,7 +70,33 @@ spec:
     - name: cloudnative-pg-clusters
       namespace: cloudnative-pg
   interval: 1h
-  path: ./kubernetes/apps/cloudnative-pg/cloudnative-pg/sandbox-init-db
+  path: ./kubernetes/apps/cloudnative-pg/cloudnative-pg/dev-init-db
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app cloudnative-pg-staging-init-db
+  namespace: &namespace cloudnative-pg
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: cloudnative-pg-clusters
+      namespace: cloudnative-pg
+  interval: 1h
+  path: ./kubernetes/apps/cloudnative-pg/cloudnative-pg/staging-init-db
   prune: true
   retryInterval: 2m
   sourceRef:
