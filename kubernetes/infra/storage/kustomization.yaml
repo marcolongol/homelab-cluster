@@ -14,6 +14,6 @@ patches:
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: storage
+        name: not-used
         labels:
           pod-security.kubernetes.io/enforce: privileged
