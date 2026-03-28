@@ -17,4 +17,65 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  values: {}
+  valuesFrom:
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_USER
+      targetPath: usjobs-api.externalDatabase.user
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_PASSWORD
+      targetPath: usjobs-api.externalDatabase.password
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_PORT
+      targetPath: usjobs-api.externalDatabase.port
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_USER
+      targetPath: usjobs-etl.externalDatabase.user
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_PASSWORD
+      targetPath: usjobs-etl.externalDatabase.password
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: POSTGRES_PORT
+      targetPath: usjobs-etl.externalDatabase.port
+  values:
+    usjobs-app:
+      ingress:
+        enabled: true
+        className: h2way-external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${H2WAY_DOMAIN}"
+        hosts:
+          - host: "staging.${H2WAY_DOMAIN}"
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+
+    usjobs-api:
+      appURL: "https://staging.${H2WAY_DOMAIN}"
+      postgresql:
+        enabled: false
+      externalDatabase:
+        host: cloudnative-pg-staging-rw-lb.cloudnative-pg.svc.cluster.local
+        database: usjobs
+      auth:
+        jwt:
+          existingSecret: usjobs-staging-secrets
+          existingSecretKey: JWT_SECRET
+          existingRefreshSecretKey: JWT_REFRESH_SECRET
+
+    usjobs-etl:
+      postgresql:
+        enabled: false
+      externalDatabase:
+        host: cloudnative-pg-staging-rw-lb.cloudnative-pg.svc.cluster.local
+        database: usjobs
+      env:
+        - name: PREFECT_API_URL
+          value: "http://prefect-server.default.svc.cluster.local:4200/api"
+      prefectServer:
+        enabled: false
