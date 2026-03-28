@@ -5,5 +5,3 @@ kind: Kustomization
 resources:
   - ./kube-prometheus-stack.yaml
   - ./external-secrets.yaml
-  - ./usjobs.yaml
-  - ./ghcr-auth.sops.yaml

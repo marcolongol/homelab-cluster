@@ -9,7 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: usjobs
-    namespace: flux-system
   install:
     remediation:
       retries: 3
@@ -44,6 +43,8 @@ spec:
       targetPath: usjobs-etl.externalDatabase.port
   values:
     usjobs-app:
+      imagePullSecrets:
+        - name: ghcr-auth
       ingress:
         enabled: true
         className: h2way-external
@@ -56,6 +57,8 @@ spec:
                 pathType: ImplementationSpecific
 
     usjobs-api:
+      imagePullSecrets:
+        - name: ghcr-auth
       appURL: "https://staging.${H2WAY_DOMAIN}"
       postgresql:
         enabled: false
@@ -69,6 +72,8 @@ spec:
           existingRefreshSecretKey: JWT_REFRESH_SECRET
 
     usjobs-etl:
+      imagePullSecrets:
+        - name: ghcr-auth
       postgresql:
         enabled: false
       externalDatabase:
