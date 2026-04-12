@@ -41,6 +41,10 @@ spec:
       name: usjobs-staging-secrets
       valuesKey: POSTGRES_PORT
       targetPath: usjobs-etl.externalDatabase.port
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: DEEPL_API_KEY
+      targetPath: usjobs-api.deepl.apiKey
   values:
     usjobs-app:
       imagePullSecrets:
