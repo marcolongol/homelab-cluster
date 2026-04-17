@@ -45,10 +45,20 @@ spec:
       name: usjobs-staging-secrets
       valuesKey: DEEPL_API_KEY
       targetPath: usjobs-api.deepl.apiKey
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: GEOIP_ACCOUNT_ID
+      targetPath: usjobs-app.geoip.accountId
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: GEOIP_LICENSE_KEY
+      targetPath: usjobs-app.geoip.licenseKey
   values:
     usjobs-app:
       imagePullSecrets:
         - name: ghcr-auth
+      geoip:
+        enabled: true
       ingress:
         enabled: true
         className: h2way-external
