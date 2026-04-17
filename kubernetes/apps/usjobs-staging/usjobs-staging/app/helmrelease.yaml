@@ -54,9 +54,11 @@ spec:
       valuesKey: GEOIP_LICENSE_KEY
       targetPath: usjobs-app.geoip.licenseKey
   values:
-    usjobs-app:
+    global:
       imagePullSecrets:
         - name: ghcr-auth
+
+    usjobs-app:
       geoip:
         enabled: true
       ingress:
@@ -71,9 +73,7 @@ spec:
                 pathType: ImplementationSpecific
 
     usjobs-api:
-      imagePullSecrets:
-        - name: ghcr-auth
-      appURL: "https://staging.${H2WAY_DOMAIN}"
+      frontendURL: "https://staging.${H2WAY_DOMAIN}"
       postgresql:
         enabled: false
       externalDatabase:
@@ -83,11 +83,8 @@ spec:
         jwt:
           existingSecret: usjobs-staging-secrets
           existingSecretKey: JWT_SECRET
-          existingRefreshSecretKey: JWT_REFRESH_SECRET
 
     usjobs-etl:
-      imagePullSecrets:
-        - name: ghcr-auth
       postgresql:
         enabled: false
       externalDatabase:
