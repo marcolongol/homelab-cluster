@@ -53,6 +53,14 @@ spec:
       name: usjobs-staging-secrets
       valuesKey: GEOIP_LICENSE_KEY
       targetPath: usjobs-app.geoip.licenseKey
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: OAUTH_GOOGLE_CLIENT_ID
+      targetPath: usjobs-api.google.clientId
+    - kind: Secret
+      name: usjobs-staging-secrets
+      valuesKey: OAUTH_GOOGLE_CLIENT_SECRET
+      targetPath: usjobs-api.google.clientSecret
   values:
     global:
       imagePullSecrets:
@@ -74,6 +82,8 @@ spec:
 
     usjobs-api:
       frontendURL: "https://staging.${H2WAY_DOMAIN}"
+      google:
+        callbackURL: "https://staging.${H2WAY_DOMAIN}/api/auth/google/callback"
       postgresql:
         enabled: false
       externalDatabase:
