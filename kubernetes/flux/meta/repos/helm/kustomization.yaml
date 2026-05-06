@@ -10,6 +10,7 @@ resources:
   - ./cnpg-grafana.yaml
   - ./csi-driver-nfs.yaml
   - ./external-dns.yaml
+  - ./gitea.yaml
   - ./ingress-nginx.yaml
   - ./minecraft.yaml
   - ./node-feature-discovery.yaml

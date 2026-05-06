@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app gitea
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: gitea
+      version: ">=12.0.0 <13.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: gitea
+        namespace: flux-system
+      interval: 15m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_DB_USER
+      targetPath: gitea.config.database.USER
+    - kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_DB_PASS
+      targetPath: gitea.config.database.PASSWD
+    - kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_ADMIN_USERNAME
+      targetPath: gitea.admin.username
+    - kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_ADMIN_PASSWORD
+      targetPath: gitea.admin.password
+    - kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_SECRET_KEY
+      targetPath: gitea.config.security.SECRET_KEY
+  values:
+    gitea:
+      config:
+        server:
+          DOMAIN: "gitea.${SECRET_DOMAIN}"
+          ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
+          SSH_DOMAIN: "gitea.${SECRET_DOMAIN}"
+        service:
+          DISABLE_REGISTRATION: true
+        database:
+          DB_TYPE: postgres
+          HOST: cloudnative-pg-rw.cloudnative-pg.svc.cluster.local:5432
+          NAME: gitea
+        cache:
+          ADAPTER: redis
+          HOST: "redis://:@gitea-valkey-master:6379/0"
+        session:
+          PROVIDER: redis
+          PROVIDER_CONFIG: "redis://:@gitea-valkey-master:6379/1"
+        queue:
+          TYPE: redis
+          CONN_STR: "redis://:@gitea-valkey-master:6379/2"
+    postgresql:
+      enabled: false
+    postgresql-ha:
+      enabled: false
+    redis-cluster:
+      enabled: false
+    valkey:
+      enabled: true
+    persistence:
+      enabled: true
+      existingClaim: *app
+    ingress:
+      enabled: true
+      className: external
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+        nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
+        nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
+        nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Email,Remote-Groups"
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          add_header Cache-Control "no-store";
+          add_header Pragma "no-cache";
+          add_header X-Frame-Options "SAMEORIGIN";
+          add_header X-XSS-Protection "1; mode=block";
+      hosts:
+        - host: "gitea.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+    # service:
+    #   ssh:
+    #     type: LoadBalancer
+    #     port: 22
+    #     annotations:
+    #       lbipam.cilium.io/ips: "10.0.11.XXX"
