@@ -22,7 +22,7 @@ spec:
         replicas: 1
         strategy: RollingUpdate
         annotations:
-          reloader.stakater.com/reload: "true"
+          reloader.stakater.com/reload: "authelia-config,authelia-logo,authelia-favicon"
         initContainers:
           init-db:
             image:
@@ -70,7 +70,7 @@ spec:
               X_AUTHELIA_CONFIG_FILTERS: template
     defaultPodOptions:
       annotations:
-        reloader.stakater.com/reload: "true"
+        reloader.stakater.com/reload: "authelia-config,authelia-logo,authelia-favicon"
       securityContext:
         runAsNonRoot: true
         runAsUser: 568
@@ -105,6 +105,22 @@ spec:
         globalMounts:
           - path: /config/configuration.yaml
             subPath: configuration.yaml
+            readOnly: true
+      logo:
+        enabled: true
+        type: configMap
+        name: authelia-logo
+        globalMounts:
+          - path: /config/assets/logo.png
+            subPath: logo.png
+            readOnly: true
+      favicon:
+        enabled: true
+        type: configMap
+        name: authelia-favicon
+        globalMounts:
+          - path: /config/assets/favicon.ico
+            subPath: favicon.ico
             readOnly: true
     ingress:
       app:

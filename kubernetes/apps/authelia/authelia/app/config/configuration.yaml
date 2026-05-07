@@ -1,9 +1,10 @@
-theme: dark
+theme: auto
 log:
   level: debug
 server:
   address: tcp://0.0.0.0:9091
   disable_healthcheck: true
+  asset_path: /config/assets
 telemetry:
   metrics:
     enabled: true
