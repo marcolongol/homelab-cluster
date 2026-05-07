@@ -15,7 +15,7 @@ spec:
           image: ghcr.io/home-operations/postgres-init:18.3
           envFrom:
             - secretRef:
-                name: gitea-secret
+                name: gitea-init-secret
           resources:
             requests:
               cpu: 10m

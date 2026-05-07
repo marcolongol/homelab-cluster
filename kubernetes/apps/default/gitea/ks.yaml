@@ -62,3 +62,4 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: false
+

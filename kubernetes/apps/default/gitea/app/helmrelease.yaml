@@ -45,19 +45,21 @@ spec:
       targetPath: gitea.config.security.SECRET_KEY
   values:
     gitea:
+      admin:
+        email: "admin@${SECRET_DOMAIN}"
       config:
         server:
           DOMAIN: "gitea.${SECRET_DOMAIN}"
           ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
           SSH_DOMAIN: "${SECRET_DOMAIN}"
         service:
-          DISABLE_REGISTRATION: true
+          DISABLE_REGISTRATION: false
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
           ENABLE_PASSWORD_SIGNIN_FORM: false
           ENABLE_BASIC_AUTHENTICATION: false
         oauth2_client:
           ENABLE_AUTO_REGISTRATION: true
-          ACCOUNT_LINKING: auto
+          ACCOUNT_LINKING: login
         database:
           DB_TYPE: postgres
           HOST: cloudnative-pg-rw.cloudnative-pg.svc.cluster.local:5432
@@ -71,6 +73,8 @@ spec:
         queue:
           TYPE: redis
           CONN_STR: "redis://:@gitea-valkey-master:6379/2"
+        actions:
+          ENABLED: true
     postgresql:
       enabled: false
     postgresql-ha:
@@ -110,6 +114,7 @@ spec:
       ssh:
         type: LoadBalancer
         port: 22
+        externalTrafficPolicy: Local
         annotations:
           lbipam.cilium.io/ips: "10.0.11.204"
           coredns.io/hostname: "${SECRET_DOMAIN}"
