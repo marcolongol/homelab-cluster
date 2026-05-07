@@ -80,9 +80,8 @@ spec:
       enabled: false
     persistence:
       enabled: true
-      existingClaim: *app
-      sharedStorage:
-        enabled: false
+      create: false
+      claimName: *app
     ingress:
       enabled: true
       className: external
