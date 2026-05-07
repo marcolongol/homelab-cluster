@@ -24,7 +24,7 @@ spec:
       retries: 3
   values:
     enabled: true
-    giteaRootURL: "https://gitea.${SECRET_DOMAIN}"
+    giteaRootURL: "http://gitea-http.default.svc.cluster.local:3000"
     existingSecret: gitea-runner-secret
     existingSecretKey: RUNNER_TOKEN
     statefulset:
