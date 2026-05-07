@@ -73,6 +73,8 @@ spec:
       enabled: false
     valkey:
       enabled: true
+    valkey-cluster:
+      enabled: false
     persistence:
       enabled: true
       existingClaim: *app
