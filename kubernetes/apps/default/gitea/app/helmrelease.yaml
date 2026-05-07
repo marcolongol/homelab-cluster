@@ -49,7 +49,7 @@ spec:
         server:
           DOMAIN: "gitea.${SECRET_DOMAIN}"
           ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
-          SSH_DOMAIN: "gitea.${SECRET_DOMAIN}"
+          SSH_DOMAIN: "${SECRET_DOMAIN}"
         service:
           DISABLE_REGISTRATION: true
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
@@ -106,9 +106,10 @@ spec:
           paths:
             - path: /
               pathType: Prefix
-    # service:
-    #   ssh:
-    #     type: LoadBalancer
-    #     port: 22
-    #     annotations:
-    #       lbipam.cilium.io/ips: "10.0.11.XXX"
+    service:
+      ssh:
+        type: LoadBalancer
+        port: 22
+        annotations:
+          lbipam.cilium.io/ips: "10.0.11.204"
+          coredns.io/hostname: "${SECRET_DOMAIN}"
