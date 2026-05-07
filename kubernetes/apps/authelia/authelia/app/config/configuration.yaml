@@ -106,7 +106,7 @@ access_control:
         - "gitea.${SECRET_DOMAIN}"
       policy: bypass
       resources:
-        - "^/[a-zA-Z0-9_.+-]+/[a-zA-Z0-9_.+-]+\\.git/.*$"
+        - "^/[a-zA-Z0-9_.+-]+/[a-zA-Z0-9_.+-]+(\\.git)?/(info/refs|git-upload-pack|git-receive-pack).*$"
         - "^/api/.*$"
         - "^/user/oauth2/Authelia/callback$"
     - domain:

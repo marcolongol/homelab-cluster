@@ -28,13 +28,20 @@ spec:
     existingSecret: gitea-runner-secret
     existingSecretKey: RUNNER_TOKEN
     statefulset:
+      replicas: 1
+      persistence:
+        size: 1Gi
       actRunner:
         registry: docker.io
         repository: gitea/act_runner
         tag: "0.6.1"
-      replicas: 1
-      persistence:
-        size: 1Gi
+        config: |
+          log:
+            level: info
+          cache:
+            enabled: false
+          container:
+            require_docker: true
       dind:
         rootless: false
         registry: docker.io
