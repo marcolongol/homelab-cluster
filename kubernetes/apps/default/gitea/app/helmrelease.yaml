@@ -73,11 +73,16 @@ spec:
       enabled: false
     valkey:
       enabled: true
+      primary:
+        persistence:
+          enabled: false
     valkey-cluster:
       enabled: false
     persistence:
       enabled: true
       existingClaim: *app
+      sharedStorage:
+        enabled: false
     ingress:
       enabled: true
       className: external
