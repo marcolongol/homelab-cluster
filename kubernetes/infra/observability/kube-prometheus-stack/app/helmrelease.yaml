@@ -32,7 +32,7 @@ spec:
     cleanPrometheusOperatorObjectNames: true
 
     alertmanager:
-      ingres:
+      ingress:
         enabled: true
         ingressClassName: internal
         hosts:
