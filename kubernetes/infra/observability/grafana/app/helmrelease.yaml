@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: grafana
+      version: ">=8.0.0 <9.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+      interval: 15m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClassName: openebs-single
+
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - grafana.${SECRET_DOMAIN}
+
+    admin:
+      existingSecret: grafana-secret
+      passwordKey: GF_SECURITY_ADMIN_PASSWORD
+
+    envFromSecrets:
+      - name: grafana-secret
+
+    grafana.ini:
+      server:
+        root_url: https://grafana.${SECRET_DOMAIN}
+      auth:
+        disable_login_form: true
+      auth.generic_oauth:
+        enabled: true
+        name: Authelia
+        client_id: $__env{GRAFANA_OIDC_CLIENT_ID}
+        client_secret: $__env{GRAFANA_OIDC_CLIENT_SECRET}
+        scopes: openid profile email groups
+        auth_url: https://auth.${SECRET_DOMAIN}/api/oidc/authorization
+        token_url: https://auth.${SECRET_DOMAIN}/api/oidc/token
+        api_url: https://auth.${SECRET_DOMAIN}/api/oidc/userinfo
+        login_attribute_path: preferred_username
+        groups_attribute_path: groups
+        name_attribute_path: name
+        role_attribute_path: "contains(groups[*], 'admin') && 'Admin' || 'Viewer'"
+        allow_sign_up: true
+        use_pkce: true
+
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: "1"
+        searchNamespace: ALL
+      datasources:
+        enabled: true
+        label: grafana_datasource
+        labelValue: "1"
+        searchNamespace: ALL
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            uid: prometheus
+            url: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+            access: proxy
+            isDefault: true

@@ -47,26 +47,22 @@ spec:
       enabled: false
 
     grafana:
-      enabled: true
+      enabled: false
       forceDeployDashboards: true
-      ingress:
-        enabled: true
-        ingressClassName: internal
-        hosts:
-          - grafana.${SECRET_DOMAIN}
-      additionalPrometheusRulesMap:
-        oom-rules:
-          groups:
-            - name: "oom-rules"
-              rules:
-                - alert: OOMKilled
-                  expr: (kube_pod_container_status_terminated_reason{reason="OOMKilled"} > 0)
-                  for: 5m
-                  labels:
-                    severity: warning
-                  annotations:
-                    summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled"
-                    description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled on {{ $value}}"
+
+    additionalPrometheusRulesMap:
+      oom-rules:
+        groups:
+          - name: "oom-rules"
+            rules:
+              - alert: OOMKilled
+                expr: (kube_pod_container_status_terminated_reason{reason="OOMKilled"} > 0)
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled"
+                  description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOMKilled on {{ $value}}"
 
     prometheus:
       ingress:
