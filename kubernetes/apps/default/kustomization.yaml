@@ -16,4 +16,5 @@ resources:
   - ./orcaslicer/ks.yaml
   - ./freecad/ks.yaml
   - ./homepage/ks.yaml
+  - ./immich/ks.yaml
   # - ./webex-jira-chief/ks.yaml
