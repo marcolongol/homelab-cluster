@@ -146,16 +146,28 @@ spec:
           nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
           nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
           nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Email,Remote-Groups"
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            add_header Cache-Control "no-store";
-            add_header Pragma "no-cache";
-            add_header X-Frame-Options "SAMEORIGIN";
-            add_header X-XSS-Protection "1; mode=block";
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
         hosts:
           - host: "immich.${SECRET_DOMAIN}"
             paths:
               - path: /
+                service:
+                  identifier: app
+                  port: http
+      api:
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+        hosts:
+          - host: "immich.${SECRET_DOMAIN}"
+            paths:
+              - path: /api
+                service:
+                  identifier: app
+                  port: http
+              - path: /socket.io
                 service:
                   identifier: app
                   port: http
