@@ -1,0 +1,23 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: immich-init-db
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-db
+          image: ghcr.io/home-operations/postgres-init:18.3
+          envFrom:
+            - secretRef:
+                name: immich-init-secret
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              memory: 64Mi

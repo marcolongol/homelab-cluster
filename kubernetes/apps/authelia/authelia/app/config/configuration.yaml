@@ -71,6 +71,16 @@ access_control:
         - "homepage.${SECRET_DOMAIN}"
       policy: one_factor
     - domain:
+        - "immich.${SECRET_DOMAIN}"
+      policy: bypass
+      resources:
+        - "^/api/.*$"
+    - domain:
+        - "immich.${SECRET_DOMAIN}"
+      policy: one_factor
+      subject:
+        - "group:immich_users"
+    - domain:
         - "actual.${SECRET_DOMAIN}"
       policy: one_factor
       subject:
