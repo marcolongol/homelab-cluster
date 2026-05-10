@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: minio
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: minio
+      version: 5.4.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: minio
+        namespace: flux-system
+  install:
+    timeout: 10m
+    replace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+  values:
+    mode: standalone
+    replicas: 1
+
+    existingSecret: minio-secret
+
+    persistence:
+      enabled: true
+      storageClass: openebs-single
+      size: 50Gi
+      accessMode: ReadWriteOnce
+
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - s3.${SECRET_DOMAIN}
+
+    consoleIngress:
+      enabled: true
+      ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "MinIO"
+        gethomepage.dev/group: "Infrastructure"
+        gethomepage.dev/icon: "minio.png"
+        gethomepage.dev/description: "S3-compatible Object Storage"
+      hosts:
+        - minio.${SECRET_DOMAIN}
+
+    oidc:
+      enabled: true
+      configUrl: "https://auth.${SECRET_DOMAIN}/.well-known/openid-configuration"
+      existingClientSecretName: minio-secret
+      existingClientIdKey: MINIO_OIDC_CLIENT_ID
+      existingClientSecretKey: MINIO_OIDC_CLIENT_SECRET
+      claimName: "groups"
+      scopes: "openid,profile,email,groups"
+      redirectUri: "https://minio.${SECRET_DOMAIN}/oauth_callback"
+      displayName: "Authelia"
+
+    resources:
+      requests:
+        memory: 1Gi
+
+    users: []
+
+    policies:
+      - name: minio_users
+        statements:
+          - resources:
+              - "arn:aws:s3:::*"
+            actions:
+              - "s3:*"
+      - name: minio_admins
+        statements:
+          - resources:
+              - "arn:aws:s3:::*"
+            actions:
+              - "s3:*"
+          - resources:
+              - "arn:aws:s3:::*"
+            actions:
+              - "admin:*"
+
+    # Required: policies render as initContainers only, the chart needs
+    # at least one main container in the post-job or it produces an invalid Job.
+    customCommands:
+      - command: "ready myminio"
+
+    metrics:
+      serviceMonitor:
+        enabled: true
+        includeNode: true

@@ -14,6 +14,7 @@ resources:
   - ./grafana.yaml
   - ./ingress-nginx.yaml
   - ./minecraft.yaml
+  - ./minio.yaml
   - ./node-feature-discovery.yaml
   - ./openebs-monitoring.yaml
   - ./openebs.yaml
