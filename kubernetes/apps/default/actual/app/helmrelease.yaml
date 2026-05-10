@@ -61,6 +61,13 @@ spec:
     ingress:
       app:
         className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Actual"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "actual-budget.png"
+          gethomepage.dev/description: "Budget Management"
+          gethomepage.dev/pod-selector: "app.kubernetes.io/name=actual"
         hosts:
           - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
             paths:

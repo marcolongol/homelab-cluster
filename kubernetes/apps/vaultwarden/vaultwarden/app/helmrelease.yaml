@@ -96,6 +96,12 @@ spec:
       app:
         className: external
         annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Vaultwarden"
+          gethomepage.dev/group: "Infrastructure"
+          gethomepage.dev/icon: "vaultwarden.png"
+          gethomepage.dev/description: "Password Manager"
+          gethomepage.dev/pod-selector: "app.kubernetes.io/name=vaultwarden"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
           nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
           nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"

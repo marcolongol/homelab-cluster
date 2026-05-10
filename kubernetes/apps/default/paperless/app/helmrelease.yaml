@@ -131,6 +131,15 @@ spec:
       app:
         className: external
         annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Paperless"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "paperless-ngx.png"
+          gethomepage.dev/description: "Document Management"
+          gethomepage.dev/widget.type: "paperlessngx"
+          gethomepage.dev/widget.url: "http://paperless-app.default.svc.cluster.local:8000"
+          gethomepage.dev/widget.key: '{{ "{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}" }}'
+          gethomepage.dev/pod-selector: "app.kubernetes.io/name=paperless"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
           nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
           nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"

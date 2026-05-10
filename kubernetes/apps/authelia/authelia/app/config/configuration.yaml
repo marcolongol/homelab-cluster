@@ -68,6 +68,9 @@ access_control:
         - "echo-server.${SECRET_DOMAIN}"
       policy: bypass
     - domain:
+        - "homepage.${SECRET_DOMAIN}"
+      policy: one_factor
+    - domain:
         - "actual.${SECRET_DOMAIN}"
       policy: one_factor
       subject:

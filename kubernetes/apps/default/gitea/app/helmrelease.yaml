@@ -96,6 +96,15 @@ spec:
       enabled: true
       className: external
       annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Gitea"
+        gethomepage.dev/group: "Development"
+        gethomepage.dev/icon: "gitea.png"
+        gethomepage.dev/description: "Git Repository"
+        gethomepage.dev/widget.type: "gitea"
+        gethomepage.dev/widget.url: "http://gitea-http.default.svc.cluster.local:3000"
+        gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_GITEA_TOKEN}}"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=gitea"
         external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
         nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
         nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"

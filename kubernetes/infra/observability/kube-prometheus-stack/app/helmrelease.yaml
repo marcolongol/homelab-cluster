@@ -68,6 +68,14 @@ spec:
       ingress:
         enabled: true
         ingressClassName: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Prometheus"
+          gethomepage.dev/group: "Infrastructure"
+          gethomepage.dev/icon: "prometheus.png"
+          gethomepage.dev/description: "Metrics & Monitoring"
+          gethomepage.dev/widget.type: "prometheus"
+          gethomepage.dev/widget.url: "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090"
         hosts:
           - prometheus.${SECRET_DOMAIN}
       prometheusSpec:

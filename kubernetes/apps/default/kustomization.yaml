@@ -15,4 +15,5 @@ resources:
   - ./gitea/ks.yaml
   - ./orcaslicer/ks.yaml
   - ./freecad/ks.yaml
+  - ./homepage/ks.yaml
   # - ./webex-jira-chief/ks.yaml

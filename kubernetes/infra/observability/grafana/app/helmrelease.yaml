@@ -31,6 +31,8 @@ spec:
     ingress:
       enabled: true
       ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "false"
       hosts:
         - grafana.${SECRET_DOMAIN}
 
@@ -46,6 +48,8 @@ spec:
         root_url: https://grafana.${SECRET_DOMAIN}
       auth:
         disable_login_form: true
+      auth.basic:
+        enabled: true
       auth.generic_oauth:
         enabled: true
         name: Authelia

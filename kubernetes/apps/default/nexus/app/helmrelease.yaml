@@ -138,6 +138,12 @@ spec:
       app:
         className: internal
         annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Nexus"
+          gethomepage.dev/group: "Development"
+          gethomepage.dev/icon: "nexus.png"
+          gethomepage.dev/description: "Artifact Repository"
+          gethomepage.dev/pod-selector: "app.kubernetes.io/name=nexus"
           nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
           nginx.ingress.kubernetes.io/ssl-redirect: "true"
           nginx.ingress.kubernetes.io/force-ssl-redirect: "true"

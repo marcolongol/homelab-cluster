@@ -61,6 +61,12 @@ spec:
       enabled: true
       className: internal
       annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Prefect"
+        gethomepage.dev/group: "Development"
+        gethomepage.dev/icon: "mdi-pipe"
+        gethomepage.dev/description: "Workflow Orchestration"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name=prefect-server"
         nginx.ingress.kubernetes.io/auth-url: "http://authelia.authelia.svc.cluster.local:9091/api/verify"
         nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}?rm=$request_method"
         nginx.ingress.kubernetes.io/auth-response-headers: "Remote-User,Remote-Name,Remote-Email,Remote-Groups"
