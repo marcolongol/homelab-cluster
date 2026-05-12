@@ -54,9 +54,9 @@ session:
 notifier:
   disable_startup_check: true
   smtp:
-    address: submission://mail.${SECRET_DOMAIN}:587
-    username: admin@${SECRET_DOMAIN}
-    sender: Authelia <admin@${SECRET_DOMAIN}>
+    address: submission://smtp.resend.com:587
+    username: resend
+    sender: Authelia <noreply@${SECRET_DOMAIN}>
 access_control:
   default_policy: deny
   networks:
