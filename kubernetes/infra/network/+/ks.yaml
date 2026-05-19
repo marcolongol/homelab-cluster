@@ -14,8 +14,6 @@ spec:
       namespace: network
     - name: external-ingress-nginx
       namespace: network
-    - name: h2way-ingress-nginx
-      namespace: network
   interval: 1h
   path: ./kubernetes/infra/network/+
   postBuild:
