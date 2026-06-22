@@ -12,7 +12,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: init-db
-          image: ghcr.io/home-operations/postgres-init:18.3
+          image: ghcr.io/home-operations/postgres-init:18.4
           envFrom:
             - secretRef:
                 name: immich-init-secret
