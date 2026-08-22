@@ -38,7 +38,7 @@ spec:
           app:
             image:
               repository: vaultwarden/server
-              tag: 1.36.0
+              tag: 1.37.2
             env:
               DOMAIN: "https://vault.${SECRET_DOMAIN}"
               SIGNUPS_ALLOWED: "false"
