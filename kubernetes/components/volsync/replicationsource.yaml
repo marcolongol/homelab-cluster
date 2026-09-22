@@ -13,6 +13,7 @@ spec:
     pruneIntervalDays: 14
     storageClassName: openebs-single
     cacheStorageClassName: openebs-single
+    cacheCapacity: ${VOLSYNC_CACHE_CAPACITY:=1Gi}
     repository: "${APP}-volsync-secret"
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
